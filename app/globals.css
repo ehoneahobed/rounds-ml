@@ -1,0 +1,80 @@
+@import "tailwindcss";
+
+:root {
+  --paper: #f3efe6;
+  --ink: #1c1916;
+  --muted: #5e584e;
+  --line: #ddd4c6;
+  --green: #0f5c45;
+  --green-soft: #e5f2ec;
+  --rust: #8d342c;
+  --rust-soft: #f8ebe7;
+  --navy: #141c27;
+  --gold: #8a6a32;
+  --background: var(--paper);
+  --foreground: var(--ink);
+  --primary: var(--green);
+  --primary-foreground: #f6f3ec;
+  --secondary: #e7e0d4;
+  --secondary-foreground: var(--ink);
+  --border: var(--line);
+  --ring: var(--green);
+  --radius: 0.45rem;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-paper: var(--paper);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-green: var(--green);
+  --color-green-soft: var(--green-soft);
+  --color-rust: var(--rust);
+  --color-rust-soft: var(--rust-soft);
+  --color-navy: var(--navy);
+  --color-gold: var(--gold);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-border: var(--border);
+  --color-ring: var(--ring);
+  --font-sans: var(--font-source);
+  --font-serif: var(--font-newsreader);
+  --font-mono: var(--font-plex);
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-source), "Source Sans 3", sans-serif;
+}
+
+::selection {
+  background: #cfe6dc;
+}
+
+.prose-read {
+  font-size: 1.05rem;
+  line-height: 1.65;
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
+.prose-read p {
+  margin: 0.9rem 0;
+}
+
+.katex-display {
+  margin: 1rem 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}

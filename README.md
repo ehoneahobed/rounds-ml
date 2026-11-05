@@ -2,7 +2,7 @@
 
 Rounds is a practical machine-learning project, shaped like a software-engineering studio: concept pages, a knowledge check, then tasks that a checker grades. This module is **decision trees**, taught as the thing a healthcare machine-learning engineer actually builds first: a shallow, readable model on tabular clinical data, with the leakage and the metric choices written down.
 
-The worked example is an early-warning tree. At hour 6 of an admission, using only what a chart would already show, predict whether the patient deteriorates later in the stay. The admissions are synthetic. Nothing here is a medical device, and nothing here is advice about a real patient.
+The worked example is an early-warning tree. At hour 6 of an admission, predict whether the patient deteriorates later in the stay from vitals and labs that have already resulted. The admissions are synthetic.
 
 Study time for the module is about **17 hours**: the concept pages, a one-hour knowledge check, and the tasks. The tree itself is the long piece.
 

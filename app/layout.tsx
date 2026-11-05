@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     template: "%s · Rounds",
   },
   description:
-    "A practical machine-learning project on decision trees for people who intend to work on clinical tabular data.",
+    "A decision-tree project: impurity, splits, and an hour-6 early-warning score on synthetic admissions.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

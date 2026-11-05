@@ -23,9 +23,9 @@ export function ProjectHome() {
     <div className="grid gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.15fr)]">
       <section>
         <p className="text-xs font-semibold uppercase tracking-[0.16em] text-green">0x01 · auto-checked · about {hours} hours · {TOTAL_POINTS} points</p>
-        <h1 className="mt-3 font-serif text-4xl leading-tight tracking-tight text-ink sm:text-5xl">Decision trees, properly</h1>
+        <h1 className="mt-3 font-serif text-4xl leading-tight tracking-tight text-ink sm:text-5xl">Decision trees</h1>
         <p className="mt-4 text-lg leading-relaxed text-ink">
-          A from-scratch classification tree, then the habits that keep a clinical table honest: what was known at hour 6, which patients belong in the future, and which threshold you would actually alarm on.
+          Build a classification tree from scratch and fit it as an early-warning score at hour 6 of an admission. The label is deterioration within 48 hours. The features are the vitals and labs that have resulted by then.
         </p>
         <dl className="mt-6 grid grid-cols-3 gap-3 border-y border-line py-4 text-sm">
           <div>
@@ -45,28 +45,23 @@ export function ProjectHome() {
             </dd>
           </div>
         </dl>
-        <h2 className="mt-8 font-serif text-2xl">How this project is shaped</h2>
+        <h2 className="mt-8 font-serif text-2xl">Work through it in this order</h2>
         <ol className="mt-3 list-decimal space-y-2 pl-5 text-[1.02rem] leading-relaxed">
-          <li>Ten concept pages. Stop and compute when a page asks. The benches are there so you can change a count and see the formula move.</li>
+          <li>Ten concept pages. When a page says to compute, do the arithmetic before you continue. The benches take a count you type and show the formula.</li>
           <li>
-            A knowledge check, {questions.length} questions, {PASS_MARK} to pass. It is not a lock on the tasks. It is how you find out you skipped the weights.
+            Knowledge check: {questions.length} questions, {PASS_MARK} to pass.
           </li>
-          <li>Eleven tasks. Level 0 is impurity. Level 1 is the tree. Level 2 is leakage, time, and the operating point. Level 3 is the hour-6 model.</li>
-          <li>A ward note, in your own words, stored only in this browser. That is the manual part of the review.</li>
+          <li>Eleven tasks. Level 0 is impurity. Level 1 is the tree. Level 2 is leakage, time, and the threshold. Level 3 fits the hour-6 model.</li>
+          <li>A ward note: the columns you refused, the threshold you chose, and one way the tree fails. It stays in this browser.</li>
         </ol>
-        <aside className="mt-6 border-l-4 border-green bg-green-soft px-4 py-3">
-          <p className="text-xs font-semibold uppercase tracking-[0.14em]">Mentor note</p>
-          <p className="mt-2 leading-relaxed">
-            The failure mode this module is built against is spending weeks near a concept and never finishing a split. Implement the functions. When a check fails, read the detail line before you rewrite the whole file. The reference solution is in the repository so the checks stay honest. Do the task before you open it.
-          </p>
-        </aside>
-        <h2 className="mt-8 font-serif text-2xl">Rules</h2>
+        <h2 className="mt-8 font-serif text-2xl">Requirements</h2>
         <ul className="mt-3 list-disc space-y-2 pl-5 leading-relaxed">
-          <li>Numeric features only. No scikit-learn in the checker.</li>
-          <li>Checks run in your browser. Drafts stay in local storage.</li>
-          <li>Later tasks prepend the code you saved on earlier ones. The file you are editing wins if both define the same name.</li>
-          <li>Match the contracts. Ties, empty inputs, and the hour-6 screen are specified because two correct solutions should grow the same tree.</li>
-          <li>The admissions are synthetic. Do not paste a real chart into the editor.</li>
+          <li>Numeric features only. Implement the tree yourself. The checker has no scikit-learn.</li>
+          <li>Checks run in this browser. Drafts stay in local storage.</li>
+          <li>Later tasks prepend the code you saved on earlier tasks. The file you are editing wins if both define the same name.</li>
+          <li>Follow the contracts on ties, empty nodes, and the hour-6 cutoff, so two correct solutions grow the same tree.</li>
+          <li>Train and test on the synthetic admissions in this project.</li>
+          <li>Finish a task before you open <span className="font-mono text-sm">curriculum/reference_solution.py</span>.</li>
         </ul>
         <h2 className="mt-8 font-serif text-2xl">Module checklist</h2>
         <ul className="mt-3 space-y-2 text-sm">

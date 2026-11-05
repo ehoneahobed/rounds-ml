@@ -31,7 +31,7 @@ export function Shell({ children }: { children: ReactNode }) {
       <main className="mx-auto w-full min-w-0 max-w-6xl flex-1 px-4 py-8">{children}</main>
       <footer className="no-print border-t border-line">
         <p className="mx-auto max-w-6xl px-4 py-6 text-sm text-muted">
-          Synthetic admissions only. This is a study project, not a medical device and not advice about a real patient. Checks run in your browser.
+          Synthetic admissions. Checks run in your browser.
         </p>
       </footer>
     </>

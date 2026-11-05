@@ -4,60 +4,48 @@ export const opening: Concept[] = [
   {
     slug: "the-job",
     number: "01",
-    title: "The job, not the diagram",
-    minutes: 25,
-    summary: "What a decision tree is for in clinical machine learning, and what finishing this module means.",
+    title: "The decision at hour 6",
+    minutes: 15,
+    summary: "Predict deterioration from columns that have already resulted.",
     blocks: [
       {
         type: "p",
-        text: "Most of the models that actually get used on hospital tables are trees, or ensembles of trees. A deterioration score, a readmission score, a no-show model, a coding assist on tabular claims: the first serious baseline is still a tree-shaped model on columns, not a network on pixels. If you cannot say what a split is doing, you cannot debug the model that will ship, and you cannot tell a clinician why a patient was flagged.",
+        text: "At hour 6 of an admission the question is specific. Will this patient deteriorate in the next 48 hours? The score uses the chart as it stands then: age, sex, heart rate, systolic blood pressure, respiratory rate, temperature, oxygen saturation, lactate, creatinine, white count, and diagnoses already on the record. Discharge disposition, a lactate drawn at hour 30, length of stay, and in-hospital death come later. They stay out of the features.",
       },
       {
         type: "p",
-        text: "This module is decision trees at the depth a working engineer needs. You will compute impurity by hand, implement CART for numeric features, and then do the part tutorials skip: refuse columns that did not exist at decision time, hold out future patients, and pick a threshold for a sensitivity target. The dataset is synthetic. The habits are the ones that transfer to a real extract.",
+        text: "A decision tree answers with a sequence of cuts. Each cut asks whether one feature is at or below a threshold. Rows that pass go left. Rows that fail go right. A leaf predicts the majority class of the training rows that reached it, and it can report that class as a frequency. The fitted model is a set of sentences: if lactate is above 1.80 and age is above 64.5, flag the patient. You can point at the split that fired.",
       },
       {
         type: "h2",
-        text: "What you are building toward",
+        text: "The score you will fit",
       },
       {
         type: "p",
-        text: "The project at the end is an early-warning score at hour 6 of an admission. The label is deterioration within 48 hours, generated from a known rule plus noise, not copied from a chart. You may use vitals and labs that have resulted by hour 6. You may not use the discharge disposition, a later lactate, the length of stay, or the fact that the patient died. A tree that uses those will look brilliant and be useless on the ward, because those facts are not known when the score would be shown.",
+        text: "The project at the end of this module is that hour-6 score. The admissions are synthetic. About a third of them deteriorate, denser than a general ward, so the cuts show up in a few hundred rows. The label is a known rule plus noise. You still attach a clock to every column. A measurement after hour 6 is illegal even when the file contains it.",
       },
       {
         type: "p",
-        text: "Ward teams already add up threshold scores such as NEWS2 from respiratory rate, oxygen, blood pressure, pulse, consciousness, and temperature. A learned tree is one way to combine vitals and labs into thresholds. It does not replace knowing that a simple score exists, and on a real project you would report your model next to that score. This cohort has no consciousness or oxygen-device column, so you will not reimplement NEWS2 here. You will build the thing NEWS2 is a cousin of: a set of axis-aligned cuts, chosen to reduce impurity, then frozen and evaluated on patients the tree did not train on.",
+        text: "Wards already add threshold scores such as NEWS2 from respiratory rate, oxygen, blood pressure, pulse, consciousness, and temperature. Your tree is that kind of object with the thresholds learned from data and with labs included. When you evaluate it, compare it with a single cut on lactate and a single cut on respiratory rate.",
       },
       {
         type: "h2",
-        text: "What this module will not pretend",
+        text: "What you are learning to do",
       },
       {
         type: "ul",
         items: [
-          "It will not make you ready to deploy into an electronic health record. Deployment, monitoring, and the clinical owner of a score are a later kind of work.",
-          "It is not a regulatory determination. A score that influences care can fall under clinical decision support expectations. An engineer asks the clinical and compliance owners before anything is shown to a ward. This page is practice, not legal advice.",
-          "It does not cover images, notes, or gradient boosting. Boosting is the usual tabular baseline after this, and it is made of the same splits. If you skip the habits on this page, boosting just memorizes the ward faster.",
-          "The rows are synthetic and enriched: roughly a third deteriorate, so a few hundred admissions are enough to see the cuts. A general ward is rarer. The metrics page shows what rarity does to the positive predictive value.",
+          "Compute a Gini gain, weights included.",
+          "Search every legal numeric split and grow a depth-limited tree.",
+          "Read a leaf as a sentence that includes how many patients it rests on.",
+          "Keep a column only when it was known at hour 6.",
+          "Put later patients in the test set.",
+          "Set the alarm at the highest probability that still meets a sensitivity target.",
         ],
       },
       {
-        type: "h2",
-        text: "How to work",
-      },
-      {
         type: "p",
-        text: "Read a concept page with a pencil. When a page says to stop and compute, do it before you open the answer. Then sit the knowledge check. Then the tasks, in order. Later tasks call the functions you wrote earlier. The checker runs in your browser. Nothing you type is uploaded.",
-      },
-      {
-        type: "p",
-        text: "Budget about 16 focused hours: six on the pages, one on the check, the rest on the tasks. The tree itself is the long one. Stopping overnight is fine. Skipping the hand calculation is how this subject stays foggy for weeks.",
-      },
-      {
-        type: "callout",
-        tone: "practice",
-        title: "Finish line",
-        text: "You can compute a Gini gain, including the weights. You can implement the split search and a depth-limited tree. You can export a leaf as a sentence with its denominator. You can name a column that leaks at hour 6. You can hold out future patients. You can choose the highest threshold that still hits a sensitivity target, and you can say what that number is not: it is not a diagnosis.",
+        text: "The next page is the geometry. A tree partitions the table into boxes, and the algorithm that grows it takes the best cut at the node it is standing on.",
       },
     ],
   },

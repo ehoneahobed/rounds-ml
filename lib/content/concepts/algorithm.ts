@@ -3,14 +3,14 @@ import type { Concept } from "@/lib/content/types";
 export const algorithm: Concept[] = [
   {
     slug: "in-code",
-    number: "05",
+    number: "06",
     title: "Building the tree in code",
     minutes: 40,
     summary: "The node contract, the stop rules, and a tree you can check by hand.",
     blocks: [
       {
         type: "p",
-        text: "The implementation task is a class, `DecisionTreeClassifier`, not a call to a library. Sklearn will be the tool you use at work once you can tell when it disagreed with you. It is not available in the checker, and importing it skips the only part of this module that makes the later tools legible.",
+        text: "The implementation task is a class, `DecisionTreeClassifier`. It is the object from the overview, with every tie and every stop written so two correct solutions grow the same tree. The checker does not import scikit-learn. The next page is that library, argument by argument, after this contract is fixed.",
       },
       {
         type: "h2",
@@ -57,7 +57,7 @@ export const algorithm: Concept[] = [
         type: "ul",
         items: [
           "A split whose both leaves predict the same class can still be legal. Impurity fell. You split. The early task where four negatives and one positive, with a minimum leaf of 2, cuts at 3.5 and both leaves predict 0.",
-          "Exclusive-or, as on the partition page, has gain 0 at the root. `max_depth=6` does not save you. The tree stays a leaf.",
+          "Exclusive-or, from the impurity page, has gain 0 at the root. `max_depth=6` does not save you. The tree stays a leaf.",
           "`min_impurity_decrease=0.5` blocks ordinary binary splits, because a Gini gain cannot exceed 0.5 when the parent itself is at most 0.5. It is a sledgehammer used to test the floor, not a setting you would ship.",
           "Calling `fit` again replaces `classes_` and the root. Predicting before `fit` is an error. Ragged rows are an error. An empty table is an error.",
         ],
@@ -70,13 +70,74 @@ export const algorithm: Concept[] = [
       },
       {
         type: "p",
-        text: "Leaf frequencies are not calibrated probabilities. With a minimum leaf of 1, a tree can report 0 or 1 because it isolated a single patient. Raising `min_samples_leaf` is the first control, and it is the one the early-warning project requires. Platt scaling and isotonic regression are how you would shrink those frequencies toward the base rate later. You will not implement them. You will report a Brier score so a wildly confident leaf is visible.",
+        text: "A leaf probability is a count of training rows divided by the size of the leaf. With `min_samples_leaf=1`, a tree can report 0 or 1 because it isolated one patient. The early-warning project raises that minimum to 10. The metrics page has a score that gets worse when a confident probability is wrong.",
+      },
+    ],
+  },
+  {
+    slug: "sklearn",
+    number: "07",
+    title: "The same tree in scikit-learn",
+    minutes: 25,
+    summary: "fit, predict, and the arguments that match the class you just specified.",
+    blocks: [
+      {
+        type: "p",
+        text: "Once your class grows the teaching tree, the library call is the same procedure with the arguments named. Install scikit-learn in a project when you want it. The tasks in this module still want your class, because the checker compares paths against the tie rules below.",
+      },
+      {
+        type: "code",
+        caption: "Gini, a depth cap, and a minimum leaf size. These three match the class you write.",
+        code: `from sklearn.tree import DecisionTreeClassifier, export_text
+
+model = DecisionTreeClassifier(
+    criterion="gini",
+    max_depth=4,
+    min_samples_leaf=10,
+)
+model.fit(X_train, y_train)
+model.predict(X_test)
+model.predict_proba(X_test)
+print(export_text(model, feature_names=feature_names, decimals=2))`,
+      },
+      {
+        type: "h2",
+        text: "What each argument is",
+      },
+      {
+        type: "ul",
+        items: [
+          "`criterion=\"gini\"` is the impurity from the Gini page. `\"entropy\"` switches the formula and still uses the same weights.",
+          "`max_depth=4` stops at depth 4. The root is depth 0. `None` keeps splitting until another stop fires.",
+          "`min_samples_leaf=10` refuses a split that would put fewer than 10 training rows in either child.",
+          "`min_samples_split` is a floor on the parent instead of the child. Your class does not take it. `min_samples_leaf` is doing that job in the tasks.",
+          "`min_impurity_decrease` ignores a split whose gain is positive but smaller than the number you set. The default is 0, which still requires the gain to be greater than 0.",
+          "`ccp_alpha` grows a large tree and then removes leaves. The next page is the cost that number is trading off. Leave it at 0 until you have read that page.",
+        ],
+      },
+      {
+        type: "h2",
+        text: "Where your class and the library can disagree",
+      },
+      {
+        type: "p",
+        text: "Both place a numeric threshold at the midpoint between two neighboring values, and both send `value <= threshold` left. `predict_proba` columns follow the sorted class labels, the same role as `classes_` on your tree. `export_text` prints a different sentence from the path strings in the next clinical pages. Read it as the same walk, not as a string you can paste into the checker.",
+      },
+      {
+        type: "p",
+        text: "Ties are the other gap. Your class keeps the lower feature index, then the lower threshold, when two gains are within 1e−12. scikit-learn's `splitter=\"best\"` often lands on the same cut, and `splitter=\"random\"` will not. If a path in this module is specified to the threshold, use your class. If you are exploring a table and you only need a shallow readable tree, `DecisionTreeClassifier` is the tool.",
+      },
+      {
+        type: "callout",
+        tone: "practice",
+        title: "A check you can run after task 5",
+        text: "Fit your class and a DecisionTreeClassifier on the eight-row lactate and age table, with max_depth=2 and min_samples_leaf=1. Walk one patient both ways. If the predicted class differs, print both sets of questions and see which tie broke differently.",
       },
     ],
   },
   {
     slug: "overfitting",
-    number: "06",
+    number: "08",
     title: "A tree that memorized the ward",
     minutes: 30,
     summary: "Depth, leaf size, and what cost-complexity pruning is asking.",
@@ -91,7 +152,7 @@ export const algorithm: Concept[] = [
       },
       {
         type: "p",
-        text: "Three knobs stop the growth while you build:",
+        text: "Three knobs stop the growth while you build. You already passed them to DecisionTreeClassifier.",
       },
       {
         type: "ul",
@@ -119,7 +180,7 @@ export const algorithm: Concept[] = [
       },
       {
         type: "p",
-        text: "where \\(R(T)\\) is the number of training mistakes and \\(|T|\\) is the number of leaves. A stump that makes 6 mistakes has cost \\(6 + \\alpha\\). A three-leaf tree that makes 2 mistakes has cost \\(2 + 3\\alpha\\). The larger tree is cheaper while \\(2 + 3\\alpha < 6 + \\alpha\\), which is \\(\\alpha < 2\\). At \\(\\alpha = 2\\) they tie. Above 2, the stump wins. Sklearn's `ccp_alpha` is this trade, using a weighted impurity rather than raw mistake counts. You will not implement the weakest-link search. When you read the parameter later, it is this equation.",
+        text: "where \\(R(T)\\) is the number of training mistakes and \\(|T|\\) is the number of leaves. A stump is a tree with one question and two leaves. A stump that makes 6 mistakes has cost \\(6 + \\alpha\\). A three-leaf tree that makes 2 mistakes has cost \\(2 + 3\\alpha\\). The larger tree is cheaper while \\(2 + 3\\alpha < 6 + \\alpha\\), which is \\(\\alpha < 2\\). At \\(\\alpha = 2\\) they tie. Above 2, the stump wins. `ccp_alpha` in scikit-learn is this trade, using a weighted impurity rather than raw mistake counts. You will not code the search that removes the leaves. When you set the argument, this is the equation you are turning.",
       },
       {
         type: "h2",

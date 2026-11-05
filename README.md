@@ -4,7 +4,7 @@ Rounds is a practical machine-learning project, shaped like a software-engineeri
 
 The worked example is an early-warning tree. At hour 6 of an admission, predict whether the patient deteriorates later in the stay from vitals and labs that have already resulted. The admissions are synthetic.
 
-Study time for the module is about **17 hours**: the concept pages, a one-hour knowledge check, and the tasks. The tree itself is the long piece.
+Study time for the module is about **18 hours**: the concept pages, a one-hour knowledge check, and the tasks. The tree itself is the long piece.
 
 ## How to study it
 

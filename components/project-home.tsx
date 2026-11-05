@@ -47,7 +47,7 @@ export function ProjectHome() {
         </dl>
         <h2 className="mt-8 font-serif text-2xl">Work through it in this order</h2>
         <ol className="mt-3 list-decimal space-y-2 pl-5 text-[1.02rem] leading-relaxed">
-          <li>Ten concept pages. When a page says to compute, do the arithmetic before you continue. The benches take a count you type and show the formula.</li>
+          <li>{concepts.length} concept pages, in order. The second page is the whole tree in plain language. The pages after it take one piece at a time. When a page says to compute, do the arithmetic before you continue.</li>
           <li>
             Knowledge check: {questions.length} questions, {PASS_MARK} to pass.
           </li>

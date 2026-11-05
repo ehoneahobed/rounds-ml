@@ -3,7 +3,7 @@ import type { Concept } from "@/lib/content/types";
 export const clinical: Concept[] = [
   {
     slug: "leakage",
-    number: "07",
+    number: "09",
     title: "Leakage, time, and site",
     minutes: 45,
     summary: "Decision time, the column screen, and a split that keeps the future in the test set.",
@@ -25,13 +25,13 @@ export const clinical: Concept[] = [
           "The label itself, under another header.",
           "A note that says goals of care were discussed the night before a death. Text models leak this way even more quietly.",
           "Any aggregate whose window extends past hour 6: medications counted at discharge, a maximum lactate over the whole stay, a count of ICU hours.",
-          "Target encoding fit on the full table. The code for 'ward 4 east' then contains the future patients' labels.",
+          "A category replaced by the average label of rows in that category, when the average was computed on the whole table. The code for 'ward 4 east' then contains the future patients' labels.",
           "Identifiers. `patient_id` is not a risk factor. With a deep tree and a unique id, it is a memorization key.",
         ],
       },
       {
         type: "p",
-        text: "Sepsis definitions have a specific version of this trap. A Sepsis-3 label looks forward across a window of organ-failure scores. If your features overlap that window, the model is predicting a label with the ingredients of the label. You are not implementing a sepsis endpoint here. You are learning to ask where the label's clock starts.",
+        text: "A sepsis label often looks forward across a window of organ-failure scores. If your features are measured inside that same window, the model is predicting the label with the ingredients of the label. Ask where the label's clock starts before you trust the column.",
       },
       {
         type: "h2",
@@ -100,7 +100,7 @@ export const clinical: Concept[] = [
   },
   {
     slug: "rules",
-    number: "08",
+    number: "10",
     title: "Rules a clinician can read",
     minutes: 35,
     summary: "Path strings, denominators, and why the root feature is not automatically the cause.",
@@ -122,7 +122,7 @@ export const clinical: Concept[] = [
       },
       {
         type: "p",
-        text: "Read the last rule to a colleague as: among patients with lactate above 1.80 and age above 64.50, both of the two training patients deteriorated. Then stop talking. The denominator is 2. You do not say the rule is a law of physiology. You do not hide `n`. A depth limit is also a reading limit. If you cannot imagine saying the leaf out loud, the tree is too large for the use you have in mind, whatever the AUC is.",
+        text: "Read the last rule to a colleague as: among patients with lactate above 1.80 and age above 64.50, both of the two training patients deteriorated. The denominator is 2. Say it. A depth limit is also a reading limit. If you cannot imagine saying the leaf out loud, the tree is too large for the use you have in mind.",
       },
       {
         type: "h2",
@@ -146,7 +146,7 @@ export const clinical: Concept[] = [
   },
   {
     slug: "metrics",
-    number: "09",
+    number: "11",
     title: "Metrics that change a decision",
     minutes: 45,
     summary: "Sensitivity, the positive predictive value under rarity, and where the threshold is chosen.",
@@ -214,7 +214,7 @@ export const clinical: Concept[] = [
   },
   {
     slug: "shipping",
-    number: "10",
+    number: "12",
     title: "What you would actually hand over",
     minutes: 25,
     summary: "The early-warning project as a review, and the habits that survive contact with boosting.",
@@ -267,7 +267,7 @@ export const clinical: Concept[] = [
       },
       {
         type: "p",
-        text: "If you can teach this module — a split on a whiteboard, a tree that matches the tie rules, a column you refused, a threshold you can justify — you are past a playlist. The knowledge check is next, then the tasks. Do the check before you open the editor if you can. The editor is a faster way to hide a gap than a pencil is.",
+        text: "The knowledge check is next, then the tasks. The check asks for the gain, the tie, the leaked column, and the threshold. The tasks ask you to code them.",
       },
     ],
   },

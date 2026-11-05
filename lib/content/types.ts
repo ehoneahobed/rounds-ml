@@ -16,7 +16,8 @@ export type Block =
   | { type: "searchTable" }
   | { type: "countedTable" }
   | { type: "partition" }
-  | { type: "paths" };
+  | { type: "paths" }
+  | { type: "lab" };
 
 export type Concept = {
   slug: string;

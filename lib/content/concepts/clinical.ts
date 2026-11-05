@@ -6,7 +6,7 @@ export const clinical: Concept[] = [
     number: "09",
     title: "Leakage, time, and site",
     minutes: 45,
-    summary: "Decision time, the column screen, and a split that keeps the future in the test set.",
+    summary: "Decision time, a screen for each column, and a split that keeps later arrivals together.",
     blocks: [
       {
         type: "p",
@@ -35,7 +35,7 @@ export const clinical: Concept[] = [
       },
       {
         type: "h2",
-        text: "The screen you will code",
+        text: "A screen for each column",
       },
       {
         type: "p",
@@ -69,7 +69,7 @@ export const clinical: Concept[] = [
       },
       {
         type: "p",
-        text: "The early-warning cohort is one row per admission, so the patient rule and a row rule coincide. The function is still written by patient, because the next extract you see will have serial vitals, and you do not want to rewrite the split under pressure.",
+        text: "This cohort is one row per admission, so a patient rule and a row rule land in the same place. The function is still written by patient. Serial vitals are several rows for one person, and a later row must not drag that person across the cut.",
       },
       {
         type: "h2",
@@ -134,7 +134,7 @@ export const clinical: Concept[] = [
       },
       {
         type: "p",
-        text: "That sum is biased toward columns that are offered more cuts. A continuous lactate gets many thresholds. A binary history flag gets one. A raw patient identifier, if you failed to drop it, can isolate every row and soak up the sum. None of this is a cause. Permutation importance is the more honest descriptive check: shuffle the column on patients the tree did not train on, and see how much the metric drops. It is still not a cause. It is a dependence. You will not code either importance in the tasks. You will be asked not to narrate a bar chart as a mechanism.",
+        text: "That sum is biased toward columns that are offered more cuts. A continuous lactate gets many thresholds. A binary history flag gets one. A raw patient identifier, left in the table, can isolate every row and soak up the sum. Permutation importance shuffles the column on patients the tree did not train on, and measures how much the metric drops. Both numbers describe a dependence. Narrating either bar chart as a mechanism overclaims what the sum says.",
       },
       {
         type: "callout",
@@ -208,7 +208,7 @@ export const clinical: Concept[] = [
       },
       {
         type: "p",
-        text: "Two plots you should recognize when you meet them, and that you will not implement here. ROC-AUC summarizes the ranking across thresholds and can look calm when the event is rare. Average precision summarizes the precision-recall curve and moves when the positive predictive value moves. A subgroup table, by hospital and by age band, will show a failure that the average hid. One number for the whole hospital is not a safety argument.",
+        text: "ROC-AUC summarizes the ranking across thresholds and can look calm when the event is rare. Average precision summarizes the precision-recall curve and moves when the positive predictive value moves. A table by hospital and by age band shows a failure that the average hid. One number for the whole hospital is a weak safety argument.",
       },
     ],
   },
@@ -217,11 +217,11 @@ export const clinical: Concept[] = [
     number: "12",
     title: "What you would actually hand over",
     minutes: 25,
-    summary: "The early-warning project as a review, and the habits that survive contact with boosting.",
+    summary: "The hour-6 score as a review a colleague can read.",
     blocks: [
       {
         type: "p",
-        text: "The last task is the whole module in one function. You are not hunting for a clever feature. The signal in the synthetic cohort is a shallow set of cuts on lactate, respiratory rate, age, and blood pressure, with noise, plus columns that predict the label because they happen later. A correct tree, a correct split, and a refusal to touch those columns is the pass. A model that uses `death_in_hospital` will look stronger and fail the review.",
+        text: "The hour-6 score is one function. The signal in the synthetic cohort is a shallow set of cuts on lactate, respiratory rate, age, and blood pressure, with noise, plus columns that predict the label because they happen later. A correct tree, a correct split, and a refusal to touch those columns is the score. A model that uses `death_in_hospital` looks stronger and fails the review.",
       },
       {
         type: "h2",
@@ -235,7 +235,7 @@ export const clinical: Concept[] = [
           "The patient-time split, training fraction 75%, test patients the latest arrivals.",
           "The tree: depth at most 4, leaves at least 10 training rows, Gini, numeric features only.",
           "The threshold, chosen on the training rows for sensitivity 0.80, then frozen.",
-          "Future-slice sensitivity and specificity. The bar in the checker is 0.75 and 0.50, because the next slice will not match the training slice exactly. The training target stays 0.80.",
+          "Sensitivity and specificity on the later arrivals. The bar is 0.75 and 0.50. The training target stays 0.80.",
           "One failure mode in plain language. Assay shift, a small leaf, a leaked column you almost used, a prevalence lower than this enriched cohort.",
         ],
       },
@@ -253,11 +253,11 @@ export const clinical: Concept[] = [
       },
       {
         type: "h2",
-        text: "The next models, without faking that you have built them",
+        text: "Many trees, the same question",
       },
       {
         type: "p",
-        text: "A random forest averages deep trees grown on resampled rows and random subsets of columns. The variance drops. The paths get harder to read. Gradient boosting, the family behind XGBoost and LightGBM, fits each new tree to the residual of the current ensemble. It is the usual strong baseline on a clinical table. Every tree in that ensemble still asks `feature <= threshold`, still memorizes a leaked column, and still needs a threshold chosen off the test set. Nothing you practiced here becomes optional when the import changes from a single tree to a booster.",
+        text: "A random forest averages deep trees grown on resampled rows and random subsets of columns. The variance drops. The paths get harder to read. Gradient boosting, the family behind XGBoost and LightGBM, fits each new tree to the residual of the current ensemble. It is the usual strong baseline on a clinical table. Every tree in that ensemble still asks `feature <= threshold`, still memorizes a leaked column, and still needs a threshold chosen off the patients being reported.",
       },
       {
         type: "callout",
@@ -265,10 +265,6 @@ export const clinical: Concept[] = [
         title: "Real charts do not belong in a side project",
         text: "This cohort is generated. A real extract is governed by HIPAA and, often, an IRB. Do not paste a row from a job, a placement, or a public-looking dump into a notebook you do not control. An identifier in the feature matrix is both a modeling bug and, on real data, a privacy bug. If a score might influence care, the clinical and compliance owners decide whether it is allowed to. That is not a determination this module can make.",
       },
-      {
-        type: "p",
-        text: "The knowledge check is next, then the tasks. The check asks for the gain, the tie, the leaked column, and the threshold. The tasks ask you to code them.",
-      },
-    ],
+      ],
   },
 ];

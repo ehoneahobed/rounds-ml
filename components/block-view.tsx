@@ -4,6 +4,7 @@ import { useState } from "react";
 import figures from "@/data/figures.json";
 import { ConfusionBench, ImpurityBench } from "@/components/benches";
 import { Formula } from "@/components/formula";
+import { LabCard } from "@/components/lab/lab-card";
 import { PartitionFigure } from "@/components/partition-figure";
 import { RichText } from "@/components/rich-text";
 import type { Block } from "@/lib/content/types";
@@ -76,6 +77,8 @@ function BlockItem({ block }: { block: Block }) {
       return <CountedTable />;
     case "partition":
       return <PartitionFigure />;
+    case "lab":
+      return <LabCard />;
     case "paths":
       return (
         <pre className="my-4 overflow-x-auto border border-line bg-navy p-4 font-mono text-[13px] leading-relaxed text-[#e7e1d4]">

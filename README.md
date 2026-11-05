@@ -8,7 +8,7 @@ Study time for the module is about **18 hours**: the concept pages, a one-hour k
 
 ## How to study it
 
-1. Read the concept pages from the project home, in order. Mark each one read when you could explain it to someone else.
+1. Read the concept pages from the project home, in order. The lab at `/lab` is the same eight-patient tree, as a table you can turn: first the patients, then the lactate wall, then the age wall, then a patient you slide through the questions. Mark each page read when you could explain it to someone else.
 2. Take the knowledge check. Sixteen questions, pass at 13. You can retake it. The module keeps your best score, in this browser only.
 3. Do the tasks from 0 to 10. Each one has a contract, a starter, and an auto review. The sample input in the brief is public. The checker also runs cases you do not see.
 4. Write the ward note: which columns you refused, where the threshold came from, and one way the tree fails on a real ward.

@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import type { Metadata } from "next";
 import { IBM_Plex_Mono, Newsreader, Source_Sans_3 } from "next/font/google";
 import "katex/dist/katex.min.css";
@@ -33,7 +34,7 @@ export const metadata: Metadata = {
     "A decision-tree project: impurity, splits, and an hour-6 early-warning score on synthetic admissions.",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html
       lang="en"

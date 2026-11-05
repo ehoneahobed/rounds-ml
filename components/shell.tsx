@@ -16,6 +16,9 @@ export function Shell({ children }: { children: ReactNode }) {
             <Link href="/" className="hover:text-green">
               Project
             </Link>
+            <Link href="/lab" className="hover:text-green">
+              Lab
+            </Link>
             <Link href="/quiz" className="hover:text-green">
               Knowledge check
             </Link>

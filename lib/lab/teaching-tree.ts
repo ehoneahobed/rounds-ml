@@ -34,13 +34,14 @@ export type Walk = {
 
 export type MissionId = "patients" | "lactate" | "age" | "walk";
 
+/** How much of the teaching tree the lab is currently drawing. */
+export type Stage = "none" | "first" | "both";
+
 export type Mission = {
   id: MissionId;
   title: string;
   body: string;
-  lactateWall: boolean;
-  ageWall: boolean;
-  regions: "none" | "first" | "both";
+  stage: Stage;
 };
 
 /** The eight admissions drawn on the concept pages. */
@@ -107,34 +108,26 @@ export function walkPatient(lactate: number, age: number): Walk {
 export const missions: Mission[] = [
   {
     id: "patients",
-    title: "Eight patients on the table",
-    body: "Each sphere is one admission. Green did not deteriorate. Rust did. Drag the table to turn it. The axes are lactate and age, the two columns this tree asks about.",
-    lactateWall: false,
-    ageWall: false,
-    regions: "none",
+    title: "Everyone in one node",
+    body: "Each sphere is one admission. Green did not deteriorate. Rust did. Six are green and two are rust, so the node is mixed. A tree asks a question when a node is mixed.",
+    stage: "none",
   },
   {
     id: "lactate",
     title: "The first question",
-    body: "The pale wall is lactate = 1.80. Patients on the low side all have label 0, so that side becomes a leaf. The high side is still mixed: two deteriorated, two did not. The tree has to ask another question there.",
-    lactateWall: true,
-    ageWall: false,
-    regions: "first",
+    body: "The root asks whether lactate is at or below 1.80. Yes goes left and stops: four patients, all label 0, so that leaf predicts 0. No goes right. That node is still two and two.",
+    stage: "first",
   },
   {
     id: "age",
     title: "The second question",
-    body: "Age is asked only on the high-lactate side. The second wall is age = 64.50. The younger box predicts 0. The older box predicts 1. Three boxes, three leaves, and every patient is in exactly one of them.",
-    lactateWall: true,
-    ageWall: true,
-    regions: "both",
+    body: "Age is asked only on the right. The question is whether age is at or below 64.50. The younger leaf predicts 0. The older leaf predicts 1. Three leaves, and every patient sits on exactly one of them.",
+    stage: "both",
   },
   {
     id: "walk",
     title: "Walk a new patient",
-    body: "The gold sphere is not in the training table. Move it with the sliders, or click a training patient to stand on that row. The root question is always first. A low lactate never reaches the age wall.",
-    lactateWall: true,
-    ageWall: true,
-    regions: "both",
+    body: "The gold sphere is a new patient. Move it with the sliders, or click a training patient. The gold branches are the questions that person is actually asked. A low lactate stops at the left leaf.",
+    stage: "both",
   },
 ];

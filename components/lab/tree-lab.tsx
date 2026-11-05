@@ -13,7 +13,7 @@ import {
   missions,
   teachingAdmissions,
   walkPatient,
-  type Mission,
+  type Stage,
 } from "@/lib/lab/teaching-tree";
 
 const LabCanvas = dynamic(() => import("@/components/lab/lab-scene").then((mod) => mod.LabCanvas), {
@@ -25,11 +25,11 @@ const rows = teachingAdmissions();
 
 /**
  * The 3D bench for the teaching tree.
- * Missions reveal one cut at a time. Sliders and clicks walk a patient through the questions.
+ * Missions reveal one question at a time. Sliders and clicks walk a patient down the branches.
  */
 export function TreeLab() {
   const [missionIndex, setMissionIndex] = useState(0);
-  const [walls, setWalls] = useState({ lactate: false, age: false, regions: "none" as Mission["regions"] });
+  const [stage, setStage] = useState<Stage>("none");
   const [lactate, setLactate] = useState(2.7);
   const [age, setAge] = useState(50);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
@@ -43,7 +43,7 @@ export function TreeLab() {
     const next = missions[index];
     if (!next) return;
     setMissionIndex(index);
-    setWalls({ lactate: next.lactateWall, age: next.ageWall, regions: next.regions });
+    setStage(next.stage);
     setSelectedIndex(null);
   }
 
@@ -53,9 +53,7 @@ export function TreeLab() {
         <div className="relative min-h-[28rem]">
           <LabCanvas
             rows={rows}
-            showLactateWall={walls.lactate}
-            showAgeWall={walls.age}
-            regions={walls.regions}
+            stage={stage}
             probe={showProbe ? { lactate, age } : null}
             selectedIndex={selectedIndex}
             onSelect={setSelectedIndex}
@@ -105,8 +103,16 @@ export function TreeLab() {
             <section>
               <h2 className="text-xs font-semibold uppercase tracking-[0.14em] text-muted">Explore</h2>
               <div className="mt-2 flex flex-wrap gap-2">
-                <Toggle pressed={walls.lactate} label={`Lactate wall ${LACTATE_CUT.toFixed(2)}`} onClick={() => setWalls((current) => ({ ...current, lactate: !current.lactate, regions: current.regions === "none" && !current.lactate ? "first" : current.regions }))} />
-                <Toggle pressed={walls.age} label={`Age wall ${AGE_CUT.toFixed(2)}`} onClick={() => setWalls((current) => ({ ...current, age: !current.age, regions: !current.age ? "both" : current.regions === "both" ? "first" : current.regions }))} />
+                <Toggle
+                  pressed={stage !== "none"}
+                  label={`First question  lactate ≤ ${LACTATE_CUT.toFixed(2)}`}
+                  onClick={() => setStage((current) => (current === "none" ? "first" : "none"))}
+                />
+                <Toggle
+                  pressed={stage === "both"}
+                  label={`Second question  age ≤ ${AGE_CUT.toFixed(2)}`}
+                  onClick={() => setStage((current) => (current === "both" ? "first" : "both"))}
+                />
               </div>
             </section>
             {mission.id === "walk" ? (
@@ -139,7 +145,7 @@ export function TreeLab() {
                   </p>
                 </>
               ) : (
-                <p className="mt-2 text-sm leading-relaxed text-muted">Click a sphere. The panel will ask the tree&apos;s questions about that patient.</p>
+                <p className="mt-2 text-sm leading-relaxed text-muted">Click a patient on a node. The panel walks that person from the root.</p>
               )}
             </section>
           </div>

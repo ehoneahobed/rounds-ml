@@ -23,6 +23,8 @@ export type Progress = {
   quizPassed: boolean;
   tasksPassed: string[];
   wardNote: WardNote | null;
+  /** Learner's own GitHub repo URL for this module, if they pasted one. */
+  githubRepoUrl: string | null;
 };
 
 const DEFAULT_KEY = DECISION_TREES.storageKey;
@@ -36,7 +38,25 @@ export function emptyProgress(): Progress {
     quizPassed: false,
     tasksPassed: [],
     wardNote: null,
+    githubRepoUrl: null,
   };
+}
+
+/** Accept http(s) GitHub URLs only; strip trailing slashes and .git. */
+export function normalizeGithubRepoUrl(raw: string): string | null {
+  const trimmed = raw.trim().replace(/\.git$/i, "").replace(/\/+$/, "");
+  if (!trimmed) return null;
+  try {
+    const url = new URL(trimmed);
+    if (url.protocol !== "https:" && url.protocol !== "http:") return null;
+    const host = url.hostname.toLowerCase();
+    if (host !== "github.com" && host !== "www.github.com") return null;
+    const parts = url.pathname.split("/").filter(Boolean);
+    if (parts.length < 2) return null;
+    return `https://github.com/${parts[0]}/${parts[1]}`;
+  } catch {
+    return null;
+  }
 }
 
 function isStringArray(value: unknown): value is string[] {
@@ -56,12 +76,15 @@ function parseProgress(raw: string | null): Progress {
       typeof note.computedByHand === "boolean"
         ? note
         : null;
+    const githubRepoUrl =
+      typeof parsed.githubRepoUrl === "string" ? normalizeGithubRepoUrl(parsed.githubRepoUrl) : null;
     return {
       conceptsRead: isStringArray(parsed.conceptsRead) ? parsed.conceptsRead : [],
       quizBest: typeof parsed.quizBest === "number" ? parsed.quizBest : null,
       quizPassed: parsed.quizPassed === true,
       tasksPassed: isStringArray(parsed.tasksPassed) ? parsed.tasksPassed : [],
       wardNote,
+      githubRepoUrl,
     };
   } catch {
     return emptyProgress();

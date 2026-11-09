@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { LearnerRepo } from "@/components/learner-repo";
 import { contentFor } from "@/lib/module-content";
 import { useModule } from "@/lib/module-context";
 import { moduleHref, type ModuleId } from "@/lib/modules";
@@ -134,6 +135,8 @@ export function ModuleHome() {
           </li>
         ) : null}
       </ul>
+
+      <LearnerRepo />
 
       <p className="mt-8 text-sm text-muted">
         <Link href="/" className="font-semibold text-green hover:underline">

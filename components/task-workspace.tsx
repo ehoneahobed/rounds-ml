@@ -139,6 +139,15 @@ function TaskSession({ task }: { task: Task }) {
         {passed ? <Badge variant="pass">Passed</Badge> : <Badge variant="outline">Not passed</Badge>}
       </div>
       <p className="mt-2 font-mono text-sm text-muted">{task.file}</p>
+      {module.github ? (
+        <p className="mt-2 text-sm text-muted">
+          Drafts stay in this browser.{" "}
+          <Link href={`${moduleHref(module, "/")}#github-repo`} className="font-semibold text-green hover:underline">
+            Export or link a GitHub repo
+          </Link>{" "}
+          from the module home when you want a backup.
+        </p>
+      ) : null}
       <div className="mt-8 grid min-w-0 grid-cols-1 gap-8 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
         <section className="min-w-0">
           <BlockView blocks={task.blocks} />

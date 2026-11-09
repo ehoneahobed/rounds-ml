@@ -13,6 +13,18 @@ export type ModuleId =
 /** Interactive lab kind for a module, or null when the module has no lab. */
 export type LabKind = "tree" | "line" | "sigmoid" | "forest" | null;
 
+/**
+ * Suggested GitHub identity for a learner's module repo.
+ * Export always uses flat Task.file names at the repo root.
+ */
+export type ModuleGithub = {
+  suggestedName: string;
+  description: string;
+  defaultVisibility: "private" | "public";
+  /** Canonical export layout. Learners may rearrange into per-task directories manually. */
+  layout: "flat";
+};
+
 export type ModuleMeta = {
   id: ModuleId;
   code: string;
@@ -31,6 +43,8 @@ export type ModuleMeta = {
   lab: LabKind;
   /** Whether the module ends with a ward note. */
   hasWardNote: boolean;
+  /** Learner GitHub repo hints; null when the module has no graded tasks yet. */
+  github: ModuleGithub | null;
 };
 
 export const INTRODUCTION: ModuleMeta = {
@@ -45,6 +59,7 @@ export const INTRODUCTION: ModuleMeta = {
   cohortFiles: [],
   lab: null,
   hasWardNote: false,
+  github: null,
 };
 
 export const LINEAR_REGRESSION: ModuleMeta = {
@@ -62,6 +77,12 @@ export const LINEAR_REGRESSION: ModuleMeta = {
   ],
   lab: "line",
   hasWardNote: true,
+  github: {
+    suggestedName: "rounds-0x02-linear-regression",
+    description: "Rounds 0x02 — linear regression from scratch, ending in hour-6 length of stay.",
+    defaultVisibility: "private",
+    layout: "flat",
+  },
 };
 
 export const LOGISTIC_REGRESSION: ModuleMeta = {
@@ -79,6 +100,12 @@ export const LOGISTIC_REGRESSION: ModuleMeta = {
   ],
   lab: "sigmoid",
   hasWardNote: true,
+  github: {
+    suggestedName: "rounds-0x03-logistic-regression",
+    description: "Rounds 0x03 — logistic regression from scratch, ending in hour-6 early warning.",
+    defaultVisibility: "private",
+    layout: "flat",
+  },
 };
 
 export const DECISION_TREES: ModuleMeta = {
@@ -96,6 +123,12 @@ export const DECISION_TREES: ModuleMeta = {
   ],
   lab: "tree",
   hasWardNote: true,
+  github: {
+    suggestedName: "rounds-0x04-decision-trees",
+    description: "Rounds 0x04 — CART from scratch, ending in an hour-6 early-warning tree.",
+    defaultVisibility: "private",
+    layout: "flat",
+  },
 };
 
 export const RANDOM_FORESTS: ModuleMeta = {
@@ -113,6 +146,12 @@ export const RANDOM_FORESTS: ModuleMeta = {
   ],
   lab: "forest",
   hasWardNote: true,
+  github: {
+    suggestedName: "rounds-0x05-random-forests",
+    description: "Rounds 0x05 — bagged trees with random features, ending in hour-6 forest early warning.",
+    defaultVisibility: "private",
+    layout: "flat",
+  },
 };
 
 /** Teaching order: map first, then supervised models that build on each other. */

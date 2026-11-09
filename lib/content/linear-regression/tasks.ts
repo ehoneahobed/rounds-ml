@@ -25,11 +25,46 @@ export const tasks: Task[] = [
     blocks: [
       {
         type: "p",
-        text: "Write `mean_squared_error(y_true, y_pred)`. It is the mean of `(y_true[i] - y_pred[i])^2`. An empty pair of lists is 0. Different lengths raise `ValueError`.",
+        text: "A prediction is a number. The truth is another number. The gap between them is the residual. Squaring the gap punishes large misses more than small ones. Mean squared error (MSE) is the average of those squares.",
+      },
+      {
+        type: "h2",
+        text: "Work it by hand once",
+      },
+      {
+        type: "ol",
+        items: [
+          "Truths `[2, 4, 6]`, predictions `[1, 5, 5]`.",
+          "Gaps: `2−1 = 1`, `4−5 = −1`, `6−5 = 1`.",
+          "Squares: `1`, `1`, `1`.",
+          "Mean: `(1+1+1)/3 = 1`.",
+        ],
+      },
+      {
+        type: "p",
+        text: "In symbols,",
+      },
+      {
+        type: "math",
+        latex: "\\mathrm{MSE} = \\frac{1}{n}\\sum_i (y_i - \\hat{y}_i)^2.",
+      },
+      {
+        type: "h2",
+        text: "What to write",
+      },
+      {
+        type: "p",
+        text: "Implement `mean_squared_error(y_true, y_pred)`. Empty lists → `0.0`. Different lengths → `ValueError`. Floats may differ by at most `1e-12`.",
       },
       {
         type: "terminal",
         text: ">>> mean_squared_error([2.0, 4.0, 6.0], [1.0, 5.0, 5.0])\n1.0\n>>> mean_squared_error([], [])\n0.0",
+      },
+      {
+        type: "callout",
+        tone: "note",
+        title: "What the checker also tries",
+        text: "A perfect fit (MSE 0), a one-row case, and a length mismatch that must raise.",
       },
     ],
   },
@@ -49,11 +84,31 @@ export const tasks: Task[] = [
     blocks: [
       {
         type: "p",
-        text: "Write `mean_absolute_error(y_true, y_pred)`. Empty input is 0. Different lengths raise `ValueError`.",
+        text: "MAE keeps the gap in the same units as the label (days of stay, dollars, mmHg). No squaring—just the absolute value, then the mean. Large outliers hurt less than they do under MSE.",
+      },
+      {
+        type: "h2",
+        text: "Work it by hand once",
+      },
+      {
+        type: "p",
+        text: "Same lists as MSE: truths `[2, 4, 6]`, predictions `[1, 5, 5]`. Absolute gaps `|1|`, `|−1|`, `|1|`. Mean = 1. Same number as MSE here only because each gap was ±1.",
+      },
+      {
+        type: "math",
+        latex: "\\mathrm{MAE} = \\frac{1}{n}\\sum_i |y_i - \\hat{y}_i|.",
+      },
+      {
+        type: "h2",
+        text: "What to write",
+      },
+      {
+        type: "p",
+        text: "Implement `mean_absolute_error(y_true, y_pred)`. Empty → `0.0`. Different lengths → `ValueError`.",
       },
       {
         type: "terminal",
-        text: ">>> mean_absolute_error([2.0, 4.0, 6.0], [1.0, 5.0, 5.0])\n1.0",
+        text: ">>> mean_absolute_error([2.0, 4.0, 6.0], [1.0, 5.0, 5.0])\n1.0\n>>> mean_absolute_error([], [])\n0.0",
       },
     ],
   },
@@ -73,7 +128,27 @@ export const tasks: Task[] = [
     blocks: [
       {
         type: "p",
-        text: "Write `residuals(y_true, y_pred)` returning the list of `y_true[i] - y_pred[i]`. Write `predict_univariate(x, slope, intercept)` returning `intercept + slope * value` for each value.",
+        text: "Before averaging errors, you often want the signed list itself: residual = truth − prediction. Positive means you under-predicted; negative means you over-predicted.",
+      },
+      {
+        type: "h2",
+        text: "A one-feature line",
+      },
+      {
+        type: "p",
+        text: "The simplest model is a straight line: prediction = intercept + slope × x. For x = `[1.5, 2.0]`, slope 2, intercept 1 → predictions `[4.0, 5.0]`.",
+      },
+      {
+        type: "math",
+        latex: "\\hat{y} = b + m x.",
+      },
+      {
+        type: "h2",
+        text: "What to write",
+      },
+      {
+        type: "p",
+        text: "Implement `residuals(y_true, y_pred)` and `predict_univariate(x, slope, intercept)`. Residuals: mismatched lengths → `ValueError`. Predict: return a new list, one value per x.",
       },
       {
         type: "terminal",
@@ -97,7 +172,35 @@ export const tasks: Task[] = [
     blocks: [
       {
         type: "p",
-        text: "Write `fit_univariate(x, y)` returning `(slope, intercept)`. Need at least two rows. A constant `x` raises `ValueError`. Mismatched lengths raise `ValueError`.",
+        text: "Given pairs (x, y), ordinary least squares picks the slope and intercept that minimize MSE. For one feature there is a closed form—no guess-and-check.",
+      },
+      {
+        type: "h2",
+        text: "Work it by hand once",
+      },
+      {
+        type: "ol",
+        items: [
+          "Compute means x̄ and ȳ.",
+          "Slope m = Σ((xᵢ − x̄)(yᵢ − ȳ)) / Σ((xᵢ − x̄)²).",
+          "Intercept b = ȳ − m · x̄.",
+        ],
+      },
+      {
+        type: "p",
+        text: "Check: x = `[0.8, 1.2, 1.6, 2.0, 2.4, 2.8]`, y = `[2.6, 3.4, 4.2, 5.0, 5.8, 6.6]`. That is exactly the line y = 2x + 1, so the fit returns `(2.0, 1.0)`.",
+      },
+      {
+        type: "math",
+        latex: "m = \\frac{\\sum_i (x_i-\\bar{x})(y_i-\\bar{y})}{\\sum_i (x_i-\\bar{x})^2},\\quad b = \\bar{y} - m\\bar{x}.",
+      },
+      {
+        type: "h2",
+        text: "What to write",
+      },
+      {
+        type: "p",
+        text: "Implement `fit_univariate(x, y)` returning `(slope, intercept)`. Need at least two rows. A constant x (denominator 0) → `ValueError`. Mismatched lengths → `ValueError`.",
       },
       {
         type: "terminal",
@@ -121,7 +224,23 @@ export const tasks: Task[] = [
     blocks: [
       {
         type: "p",
-        text: "Write `design_matrix(X)`. Each output row is `[1.0, *row]`. An empty table stays empty. Ragged rows raise `ValueError`.",
+        text: "Multivariate linear models write prediction as a dot product: row · weights. The intercept is just another weight—if every row starts with a 1. That leading column of ones is the design-matrix trick.",
+      },
+      {
+        type: "h2",
+        text: "Work it by hand once",
+      },
+      {
+        type: "p",
+        text: "`[[2.0], [3.0]]` becomes `[[1.0, 2.0], [1.0, 3.0]]`. Two features would become three columns: ones, then feature A, then feature B.",
+      },
+      {
+        type: "h2",
+        text: "What to write",
+      },
+      {
+        type: "p",
+        text: "Implement `design_matrix(X)`. Empty table → `[]`. Rows of unequal length → `ValueError`. Do not mutate the caller’s rows in place—return a new table.",
       },
       {
         type: "terminal",
@@ -145,11 +264,31 @@ export const tasks: Task[] = [
     blocks: [
       {
         type: "p",
-        text: "Write `fit_ols(X, y)` solving `(Xᵀ X) w = Xᵀ y`, and `predict_linear(X, weights)`. `X` already includes the intercept column. Need at least as many rows as columns.",
+        text: "With several features (and a leading column of ones), the best weight vector w still minimizes MSE. The calculus shortcut is the normal equations: solve a square linear system instead of searching.",
+      },
+      {
+        type: "math",
+        latex: "(X^{\\mathsf{T}} X)\\, w = X^{\\mathsf{T}} y.",
+      },
+      {
+        type: "h2",
+        text: "Work it by hand once",
+      },
+      {
+        type: "p",
+        text: "X already has the intercept column: rows `[1,1]`, `[1,2]`, `[1,3]`, `[1,4]` and y = `[3,5,7,9]`. The line is ŷ = 1 + 2x, so w = `[1.0, 2.0]`. Predicting with those weights recovers y.",
+      },
+      {
+        type: "h2",
+        text: "What to write",
+      },
+      {
+        type: "p",
+        text: "Implement `fit_ols(X, y)` and `predict_linear(X, weights)`. X already includes the intercept. Need at least as many rows as columns. Empty X, length mismatch, or a singular system → `ValueError`. You may solve the system with Gaussian elimination (partial pivoting) or any correct linear solver you write yourself—no numpy required.",
       },
       {
         type: "terminal",
-        text: ">>> X = [[1.0, 1.0], [1.0, 2.0], [1.0, 3.0], [1.0, 4.0]]\n>>> fit_ols(X, [3.0, 5.0, 7.0, 9.0])\n[1.0, 2.0]",
+        text: ">>> X = [[1.0, 1.0], [1.0, 2.0], [1.0, 3.0], [1.0, 4.0]]\n>>> fit_ols(X, [3.0, 5.0, 7.0, 9.0])\n[1.0, 2.0]\n>>> predict_linear(X, [1.0, 2.0])\n[3.0, 5.0, 7.0, 9.0]",
       },
     ],
   },
@@ -169,7 +308,36 @@ export const tasks: Task[] = [
     blocks: [
       {
         type: "p",
-        text: "Write `gradient_descent(X, y, learning_rate, epochs, initial_weights=None)`. Use gradient `(2/n) Xᵀ (Xw - y)`. Default initial weights are zeros. `X` already includes the intercept column.",
+        text: "OLS solves in one shot. Gradient descent walks downhill instead: start from a guess for w, compute how MSE changes if you nudge each weight, then take a small step opposite that gradient. Repeat for many epochs.",
+      },
+      {
+        type: "math",
+        latex: "\\nabla_w \\mathrm{MSE} = \\frac{2}{n} X^{\\mathsf{T}}(Xw - y),\\qquad w \\leftarrow w - \\eta\\,\\nabla_w.",
+      },
+      {
+        type: "h2",
+        text: "Recipe each epoch",
+      },
+      {
+        type: "ol",
+        items: [
+          "Predict ŷ = Xw (X already has the intercept column).",
+          "Errors = ŷ − y (prediction minus truth).",
+          "For each weight j, gradient_j = (2/n) · Σᵢ Xᵢⱼ · errorᵢ.",
+          "w ← w − learning_rate · gradient.",
+        ],
+      },
+      {
+        type: "p",
+        text: "With enough epochs and a sane learning rate on the four-row line from the OLS task, you should land near `[1, 2]` again.",
+      },
+      {
+        type: "h2",
+        text: "What to write",
+      },
+      {
+        type: "p",
+        text: "Implement `gradient_descent(X, y, learning_rate, epochs, initial_weights=None)`. Default initial weights are all zeros. Empty X or length mismatch → `ValueError`. Return the final weight list.",
       },
       {
         type: "terminal",
@@ -193,7 +361,43 @@ export const tasks: Task[] = [
     blocks: [
       {
         type: "p",
-        text: "Write `r_squared(y_true, y_pred)`. When `SS_tot` is 0, return 1.0 if every residual is 0, else 0.0. Empty input is 0.",
+        text: "R² asks: how much better are your predictions than always guessing the mean of y? 1 means you explain all of the variance. 0 means you did no better than the mean. Negative means you did worse.",
+      },
+      {
+        type: "h2",
+        text: "Work it by hand once",
+      },
+      {
+        type: "ol",
+        items: [
+          "SS_res = Σ (yᵢ − ŷᵢ)² — leftover error after your model.",
+          "SS_tot = Σ (yᵢ − ȳ)² — leftover error if you always predicted the mean.",
+          "R² = 1 − SS_res / SS_tot.",
+        ],
+      },
+      {
+        type: "p",
+        text: "Truths `[2, 4, 6]`. Perfect predictions → R² = 1. Predictions all `4` (the mean) → SS_res = SS_tot → R² = 0.",
+      },
+      {
+        type: "math",
+        latex: "R^2 = 1 - \\frac{\\mathrm{SS}_{\\mathrm{res}}}{\\mathrm{SS}_{\\mathrm{tot}}}.",
+      },
+      {
+        type: "h2",
+        text: "Edge cases",
+      },
+      {
+        type: "p",
+        text: "When every truth is the same, SS_tot is 0. Return `1.0` if every residual is also 0 (you matched the constant), else `0.0`. Empty input → `0.0`.",
+      },
+      {
+        type: "h2",
+        text: "What to write",
+      },
+      {
+        type: "p",
+        text: "Implement `r_squared(y_true, y_pred)`. Different lengths → `ValueError`.",
       },
       {
         type: "terminal",
@@ -217,7 +421,33 @@ export const tasks: Task[] = [
     blocks: [
       {
         type: "p",
-        text: "Write `leakage_report(columns, decision_hour=6)`. Each column has `name`, `available_hour`, and `role`. First matching reason wins: `label`, `identifier`, `temporal_leak`, `name_leak`, `unknown_time`. Name tokens include `los_`. Clean columns are omitted.",
+        text: "Before you fit, refuse columns that cheat. Decision time for this project is hour 6 of an admission. Each column arrives as a dict with `name`, `available_hour` (int or `None`), and `role` (`feature`, `label`, or `identifier`).",
+      },
+      {
+        type: "h2",
+        text: "First matching reason wins",
+      },
+      {
+        type: "ol",
+        items: [
+          "`label` — role is `label` (you never use the answer as an input).",
+          "`identifier` — role is `identifier` (patient id, hospital id, …).",
+          "`temporal_leak` — `available_hour` is not `None` and is greater than the decision hour (default 6). Hour 6 itself is legal.",
+          "`name_leak` — lowercased name contains any of: discharge, death, mortal, expired, icu_transfer, future_, day2, outcome, los_.",
+          "`unknown_time` — it is a feature and hour is `None`.",
+        ],
+      },
+      {
+        type: "p",
+        text: "Return only flagged columns as `{\"name\", \"reason\"}`, in input order. Clean columns are omitted. A bad name with hour 6 is still a name leak. A late hour outranks a bad name. Empty input → `[]`.",
+      },
+      {
+        type: "h2",
+        text: "What to write",
+      },
+      {
+        type: "p",
+        text: "Implement `leakage_report(columns, decision_hour=6)`. The checker includes a column named like a length-of-stay proxy and a clean-named column that arrives after hour 6.",
       },
     ],
   },
@@ -237,7 +467,33 @@ export const tasks: Task[] = [
     blocks: [
       {
         type: "p",
-        text: "Write `patient_temporal_split(rows, patient_key, time_key, fraction)`. Order patients by earliest timestamp, then by patient id as a string. The last `ceil(fraction * n)` patients, clamped to `[1, n-1]`, are test. Fraction outside `(0, 1)` or fewer than two patients raises `ValueError`.",
+        text: "A random row shuffle can put the same person in train and test. That flatters you. Hold out whole patients, and put the latest arrivals in the test set.",
+      },
+      {
+        type: "h2",
+        text: "Recipe",
+      },
+      {
+        type: "ol",
+        items: [
+          "Group rows by patient id.",
+          "Date each patient by their earliest `time_key` (timestamps are comparable strings).",
+          "Sort patients by that time, then by `str(patient_id)`.",
+          "Test = last `ceil(fraction * n_patients)` patients, clamped so each side has at least one patient (`[1, n-1]`).",
+          "Every row of a patient stays together. Keep original row order inside train and inside test—do not sort the caller’s list in place.",
+        ],
+      },
+      {
+        type: "p",
+        text: "Example: patients first seen on Jan 1, 2, 3, 4. With `fraction=0.5`, test is the last two. If the Jan-2 patient also has a Jan-5 row, that row stays in train with them.",
+      },
+      {
+        type: "h2",
+        text: "What to write",
+      },
+      {
+        type: "p",
+        text: "Implement `patient_temporal_split(rows, patient_key, time_key, fraction)` returning `(train_rows, test_rows)`. Fraction not strictly inside (0, 1), or fewer than two patients → `ValueError`.",
       },
     ],
   },
@@ -257,7 +513,42 @@ export const tasks: Task[] = [
     blocks: [
       {
         type: "p",
-        text: "Write `train_length_of_stay(csv_path)`. Use only `ALLOWED_FEATURES`, `patient_temporal_split` with fraction 0.25, a design matrix with an intercept, and `fit_ols`. Return `train_mae`, `train_rmse`, `train_r2`, `test_mae`, `test_rmse`, and `test_r2`. The checker scores cohort A (shown) and cohort B (hidden). Test MAE must stay under 2.5 and test R² above 0.35 on both.",
+        text: "Put the pieces together. You get a CSV path. Fit a linear model for `los_days` using only facts known at hour 6, hold out later patients, and report train/test MAE, RMSE, and R².",
+      },
+      {
+        type: "h2",
+        text: "What you may use",
+      },
+      {
+        type: "table",
+        caption: "Decision time is hour 6. Label is los_days.",
+        headers: ["Column", "Knowable", "In the matrix?"],
+        rows: [
+          ["patient_id, admission_time", "at arrival", "no — keys for the split"],
+          ["age, sex, diabetes, heart_failure", "at arrival", "yes"],
+          ["hr, sbp, rr, temp, spo2, lactate, creatinine, wbc", "hour 6", "yes"],
+          ["los_days", "end of stay", "no — this is y"],
+        ],
+      },
+      {
+        type: "h2",
+        text: "Recipe",
+      },
+      {
+        type: "ol",
+        items: [
+          "Read the CSV. Cast `ALLOWED_FEATURES` and `los_days` to floats.",
+          "Split with `patient_temporal_split(..., fraction=0.25)`.",
+          "Build a design matrix (intercept column) from `ALLOWED_FEATURES` only—on train and on test separately.",
+          "Fit with `fit_ols` on the training matrix. Predict with `predict_linear`.",
+          "RMSE is `sqrt(mean_squared_error(...))`. Pack the six metrics named in the starter.",
+        ],
+      },
+      {
+        type: "callout",
+        tone: "practice",
+        title: "How you are scored",
+        text: "The checker scores cohort A (shown) and hidden cohort B. Test MAE must stay under 2.5 and test R² above 0.35 on both. Hardcoding rows will not travel.",
       },
     ],
   },

@@ -25,17 +25,51 @@ export const tasks: Task[] = [
     blocks: [
       {
         type: "p",
-        text: "Write `gini_impurity(labels)`. It is \\(1 - \\sum p_k^2\\). An empty list is 0. A single class is 0. Order does not matter, and the function is not limited to two classes.",
+        text: "A node in a tree is just a bag of training labels—for example four people: `[0, 0, 0, 1]`. You need a number for how mixed that bag is. Pure (everyone the same) should score 0. Half-and-half should score high. That number is Gini impurity.",
+      },
+      {
+        type: "h2",
+        text: "Work it by hand once",
+      },
+      {
+        type: "ol",
+        items: [
+          "Count each class. Here: three `0`s and one `1`. Total n = 4.",
+          "Turn counts into shares (proportions): p₀ = 3/4 = 0.75, p₁ = 1/4 = 0.25.",
+          "Square each share: 0.75² = 0.5625, 0.25² = 0.0625.",
+          "Add the squares: 0.625.",
+          "Gini = 1 − that sum = 1 − 0.625 = 0.375.",
+        ],
+      },
+      {
+        type: "p",
+        text: "In symbols, if each class’s share of the bag is \\(p_k\\),",
+      },
+      {
+        type: "math",
+        latex: "G = 1 - \\sum_k p_k^2.",
+      },
+      {
+        type: "p",
+        text: "Check the extremes. All one class → only share is 1 → \\(G = 1 - 1 = 0\\). Two classes evenly split (`[0,1,0,1]`) → shares 0.5, 0.5 → \\(G = 1 - 0.25 - 0.25 = 0.5\\). So for a yes/no label, Gini runs from 0 (pure) up to 0.5 (maximally mixed).",
+      },
+      {
+        type: "h2",
+        text: "What to write",
+      },
+      {
+        type: "p",
+        text: "Implement `gini_impurity(labels)` that returns that number for any list of integer class labels (two classes or more). Order of the list must not matter. Empty list → `0.0`. Floats may differ by at most `1e-12` from the exact value.",
       },
       {
         type: "terminal",
-        text: ">>> gini_impurity([0, 0, 0, 1])\n0.375\n>>> gini_impurity([0, 1, 0, 1])\n0.5\n>>> gini_impurity([])\n0.0",
+        text: ">>> gini_impurity([0, 0, 0, 1])\n0.375\n>>> gini_impurity([0, 1, 0, 1])\n0.5\n>>> gini_impurity([])\n0.0\n>>> gini_impurity([7, 7, 7])\n0.0",
       },
       {
         type: "callout",
         tone: "note",
-        title: "Auto review",
-        text: "The sample above is public. The checker also scores a pure node, a three-class node, and a one-row node. Tolerance on floats is 1e−12.",
+        title: "What the checker also tries",
+        text: "A one-row node (must be 0), and a three-class bag. The public samples above are not the whole test.",
       },
     ],
   },
@@ -55,11 +89,39 @@ export const tasks: Task[] = [
     blocks: [
       {
         type: "p",
-        text: "Write `entropy(labels)` in bits. Use \\(\\log_2\\). Treat \\(0 \\log 0\\) as 0. Empty input is 0. A fair two-class node is exactly 1. Three equal classes are \\(\\log_2 3\\).",
+        text: "Entropy is a second way to score how mixed a bag of labels is. Same shares as Gini, different arithmetic. Trees in this module’s checker use Gini; you still implement entropy so you can compare the two.",
+      },
+      {
+        type: "h2",
+        text: "Work it by hand once",
+      },
+      {
+        type: "p",
+        text: "Take `[0, 1, 1, 0]` — two of each class. Shares p₀ = 0.5, p₁ = 0.5. Entropy in bits is",
+      },
+      {
+        type: "math",
+        latex: "H = -\\bigl(p_0\\log_2 p_0 + p_1\\log_2 p_1 + \\cdots\\bigr).",
+      },
+      {
+        type: "p",
+        text: "So \\(H = -(0.5\\log_2 0.5 + 0.5\\log_2 0.5) = -(0.5\\cdot(-1) + 0.5\\cdot(-1)) = 1\\). A fair coin of labels is exactly 1 bit. A pure bag `[0,0,0,0]` has only p=1; that term is 0, so H = 0.",
+      },
+      {
+        type: "p",
+        text: "If a class never appears, its share is 0. Do not call `log2(0)`. Treat that term as 0.",
+      },
+      {
+        type: "h2",
+        text: "What to write",
+      },
+      {
+        type: "p",
+        text: "Implement `entropy(labels)` using base-2 logs. Empty list → `0.0`. Three equal classes should return `log2(3)`. Tolerance `1e-12`.",
       },
       {
         type: "terminal",
-        text: ">>> entropy([0, 1, 1, 0])\n1.0\n>>> entropy([0, 0, 0, 0])\n0.0",
+        text: ">>> entropy([0, 1, 1, 0])\n1.0\n>>> entropy([0, 0, 0, 0])\n0.0\n>>> entropy([])\n0.0",
       },
     ],
   },
@@ -79,11 +141,32 @@ export const tasks: Task[] = [
     blocks: [
       {
         type: "p",
-        text: "Write `information_gain(parent, left, right, criterion='gini')`. Subtract the weighted child impurities from the parent impurity. The weights are `len(left) / n` and `len(right) / n` with `n = len(left) + len(right)`. If the parent or either child is empty, return 0. `criterion` is `gini` or `entropy`. Anything else raises `ValueError`.",
+        text: "A split sends some people left and some right. Information gain asks: how much cleaner did the bags get? Parent impurity minus the size-weighted impurity of the children.",
+      },
+      {
+        type: "h2",
+        text: "Work it by hand once (Gini)",
       },
       {
         type: "p",
-        text: "You may call your `gini_impurity` and `entropy`. Checks prepend the drafts saved from earlier tasks. If a name is missing, finish that task and come back. The current file is executed last, so a helper you paste here overrides the saved one.",
+        text: "Parent: eight labels `[0,0,0,0,1,1,1,1]`. That is half and half, so parent Gini = 0.5. Perfect split: left all zeros, right all ones. Each child is pure → Gini 0. Weights are 4/8 and 4/8. Gain = 0.5 − (0.5·0 + 0.5·0) = 0.5.",
+      },
+      {
+        type: "math",
+        latex:
+          "\\mathrm{Gain} = I(\\mathrm{parent}) - \\frac{|L|}{n} I(L) - \\frac{|R|}{n} I(R), \\quad n = |L| + |R|.",
+      },
+      {
+        type: "p",
+        text: "If either child is empty, it is not a real split—return 0. Same if the parent is empty.",
+      },
+      {
+        type: "h2",
+        text: "What to write",
+      },
+      {
+        type: "p",
+        text: "Implement `information_gain(parent, left, right, criterion='gini')`. Use your saved `gini_impurity` / `entropy` (earlier drafts are prepended when you run checks). `criterion` must be `'gini'` or `'entropy'`; anything else raises `ValueError`.",
       },
       {
         type: "terminal",
@@ -107,26 +190,37 @@ export const tasks: Task[] = [
     blocks: [
       {
         type: "p",
-        text: "Write `best_numeric_split(values, labels)`. Sort the pairs. A cut is legal only between two adjacent sorted values that differ. The threshold is their midpoint, and `value <= threshold` would go left. Score each cut with Gini gain. Return `(threshold, gain)`.",
+        text: "You have one numeric column and a label for each row. You want the best yes/no cut: “is this value ≤ some threshold?” Only midpoints between neighboring sorted values that differ are worth trying—any number between those two neighbors sends the same people left and right.",
       },
       {
-        type: "ul",
+        type: "h2",
+        text: "Recipe",
+      },
+      {
+        type: "ol",
         items: [
-          "Gains within 1e−12 are tied. Keep the lower threshold.",
-          "If every gain is at most 1e−12, or the column cannot be cut, return `(float('nan'), 0.0)`.",
-          "A single row returns that same pair. A pure label column returns it too.",
-          "Mismatched lengths raise `ValueError`.",
+          "Pair each value with its label. Sort by the value.",
+          "Look between adjacent pairs. If the two values are equal, skip—no new grouping.",
+          "Threshold = midpoint of those two values. Everyone with value ≤ threshold would go left; the rest right.",
+          "Score that cut with Gini information gain (parent vs left vs right).",
+          "Keep the cut with the highest gain. If two gains tie within 1e−12, keep the lower threshold.",
         ],
+      },
+      {
+        type: "p",
+        text: "Teaching example: values `[0.8, 1.1, 1.2, 1.4, 2.0, 2.4, 3.1, 4.0]` with labels four 0s then four 1s. The best cut is between 1.4 and 2.0 → threshold 1.7, gain 0.5 (perfect separation).",
+      },
+      {
+        type: "h2",
+        text: "What to write",
+      },
+      {
+        type: "p",
+        text: "Implement `best_numeric_split(values, labels)` returning `(threshold, gain)`. If nothing helps (or you cannot cut—one row, all values equal, pure labels with no useful cut), return `(float('nan'), 0.0)`. Mismatched lengths raise `ValueError`. Sort yourself; the checker will shuffle the input.",
       },
       {
         type: "terminal",
         text: ">>> best_numeric_split([0.8, 1.1, 1.2, 1.4, 2.0, 2.4, 3.1, 4.0], [0, 0, 0, 0, 1, 1, 1, 1])\n(1.7, 0.5)",
-      },
-      {
-        type: "callout",
-        tone: "note",
-        title: "Unsorted input",
-        text: "The checker will hand you the same rows in a shuffled order. Sort them. Do not assume the caller did.",
       },
     ],
   },
@@ -146,29 +240,48 @@ export const tasks: Task[] = [
     blocks: [
       {
         type: "p",
-        text: "Implement `DecisionTreeClassifier`. The docstring in the editor is the contract, including the errors. Read it before you write the recursion. A short version of the rules that are easy to invert:",
+        text: "Now grow a whole flowchart. `fit` builds the tree from a numeric matrix `X` and labels `y`. `predict` walks each new row to a leaf and returns the majority class. `predict_proba` returns the class frequencies in that leaf (columns ordered by sorted `classes_`).",
       },
       {
-        type: "ul",
+        type: "h2",
+        text: "How a node decides to split",
+      },
+      {
+        type: "ol",
         items: [
-          "Root depth is 0. Stop splitting at depth >= max_depth.",
-          "`value <= threshold` goes left. Thresholds are midpoints of adjacent sorted values that differ.",
-          "Both children must contain at least `min_samples_leaf` rows.",
-          "Keep a split only when Gini gain is > 0 and >= `min_impurity_decrease`. A split that does not change the majority class is still legal if the impurity fell.",
-          "Ties within 1e−12: lower feature index, then lower threshold.",
-          "Majority ties in a leaf go to the smaller label. `predict_proba` follows sorted `classes_`, including zeros for classes absent from that leaf.",
-          "Exclusive-or has no root gain. A deep max_depth must still refuse to split it.",
+          "If depth is already `max_depth`, or everyone has the same label, or there are too few rows to make two legal children—stop. Make a leaf.",
+          "Otherwise try every feature. For each feature, try midpoint thresholds like `best_numeric_split`.",
+          "Both children must have at least `min_samples_leaf` rows.",
+          "Keep a split only if Gini gain is strictly greater than 0 and at least `min_impurity_decrease`.",
+          "Among legal splits, take the highest gain. Ties within 1e−12: lower feature index, then lower threshold.",
+          "`value <= threshold` goes left; `>` goes right.",
         ],
       },
       {
+        type: "h2",
+        text: "Leaves",
+      },
+      {
         type: "p",
-        text: "On the eight-row teaching table from the concept pages (lactate, then age), the root feature is column 0 at threshold 1.8, and the right child splits on age at 64.5. Use that as a private test. The checker builds it too, along with a multiclass column, a leaf-size constraint, and a second `fit` that must replace the first tree.",
+        text: "Majority class wins. If two classes tie in count, pick the smaller label (because `classes_` is sorted). Probabilities are counts / n in that leaf, including 0.0 for a class that never appears in the leaf but exists in `classes_`.",
+      },
+      {
+        type: "p",
+        text: "On the eight-row teaching table (lactate then age), a fitted tree with default-ish stops should put the root on column 0 at threshold 1.8, and the high-lactate branch should split age at 64.5. Use that as a private check.",
+      },
+      {
+        type: "h2",
+        text: "What to write",
+      },
+      {
+        type: "p",
+        text: "Implement `DecisionTreeClassifier` as in the starter docstring—errors included. Read the docstring before coding. Do not import scikit-learn; it is not in the checker and would not match these tie rules.",
       },
       {
         type: "callout",
         tone: "warn",
-        title: "Do not import sklearn",
-        text: "It is not in the checker, and a wrapper around it would not satisfy the tie rules above. A straightforward scan is fast enough for the rows in these checks. Update class counts as you walk a sorted column if you later time out on the project.",
+        title: "Exclusive-or",
+        text: "A dataset where no single feature helps at the root must stay a stump even if `max_depth` is large. If your tree still splits it, your “gain > 0” check is wrong.",
       },
     ],
   },
@@ -188,7 +301,11 @@ export const tasks: Task[] = [
     blocks: [
       {
         type: "p",
-        text: "Write `export_paths(tree, feature_names)`. Depth-first, left then right. Format:",
+        text: "A clinician should be able to read the tree as if-then sentences. Walk every path from the root to a leaf and write one line per leaf.",
+      },
+      {
+        type: "h2",
+        text: "Format",
       },
       {
         type: "code",
@@ -197,15 +314,20 @@ export const tasks: Task[] = [
       {
         type: "ul",
         items: [
-          "Left branches use `<=`. Right branches use `>`. Join with ` AND `.",
-          "Thresholds and `p` are printed with two decimal places. `p` is the frequency of the predicted class, not of class 1 in particular.",
-          "A leaf at the root uses the condition `True`.",
-          "The name list must have one entry per fitted feature, or you raise `ValueError`. Exporting before fit raises `RuntimeError`.",
+          "Walk depth-first, left child before right.",
+          "Left edge uses `<=`; right edge uses `>`. Join conditions with ` AND `.",
+          "Print thresholds and `p` with exactly two decimal places.",
+          "`p` is the frequency of the predicted class in that leaf (not always class 1). Always say `n`—the leaf size.",
+          "A tree that never split uses the condition `True`.",
         ],
       },
       {
+        type: "h2",
+        text: "What to write",
+      },
+      {
         type: "p",
-        text: "The checker fits trees with your `DecisionTreeClassifier` from the saved draft of task 4, unless you define the class again in this file. A pure formatting function that only hardcodes the teaching tree will fail the other leaves.",
+        text: "Implement `export_paths(tree, feature_names)`. Wrong-length `feature_names` → `ValueError`. Export before `fit` → `RuntimeError`. The checker fits trees with your saved `DecisionTreeClassifier` from task 4 unless you redefine the class here.",
       },
     ],
   },
@@ -225,11 +347,23 @@ export const tasks: Task[] = [
     blocks: [
       {
         type: "p",
-        text: "Classification impurity is the wrong tool for a length of stay. Write `variance(values)`, the mean squared deviation from the mean, divided by n. Empty input is 0. Do not divide by n−1. That sample variance is a different statistic, and CART does not use it.",
+        text: "If the label is a number (days of stay, price, score), “how mixed?” becomes “how spread out?” Use population variance: average squared distance from the mean, dividing by n—not n−1.",
+      },
+      {
+        type: "h2",
+        text: "Work it by hand once",
       },
       {
         type: "p",
-        text: "Write `best_regression_split(values, targets)`. Same midpoint rules as the classification search, including the lower-threshold tie break. The score is variance reduction with the same weights as information gain. Return `(float('nan'), 0.0)` when no cut helps, or when the inputs cannot be cut. Mismatched lengths raise `ValueError`.",
+        text: "`[10, 10, 0, 0]`. Mean = 5. Squared gaps: 25, 25, 25, 25. Variance = 100/4 = 25. A perfect split into `[10,10]` and `[0,0]` makes both children variance 0, so variance reduction is 25 − 0 = 25.",
+      },
+      {
+        type: "h2",
+        text: "What to write",
+      },
+      {
+        type: "p",
+        text: "Implement `variance(values)` (empty → 0) and `best_regression_split(values, targets)`. Same midpoint / lower-threshold tie rules as classification, but score with variance reduction weighted like information gain. No helpful cut → `(float('nan'), 0.0)`. Mismatched lengths → `ValueError`.",
       },
       {
         type: "terminal",
@@ -253,21 +387,33 @@ export const tasks: Task[] = [
     blocks: [
       {
         type: "p",
-        text: "Write `leakage_report(columns)`. Decision time is hour 6. Each dictionary has `name`, `available_hour` (an int or None), and `role`. Return only the flagged columns, as `{\"name\", \"reason\"}`, in the order you saw them. The first matching reason wins:",
+        text: "Before you fit, refuse columns that cheat. Decision time for this project is hour 6 of an admission. Each column arrives as a dict with `name`, `available_hour` (int or `None`), and `role` (`feature`, `label`, or `identifier`).",
+      },
+      {
+        type: "h2",
+        text: "First matching reason wins",
       },
       {
         type: "ol",
         items: [
-          "`label` when role is `label`.",
-          "`identifier` when role is `identifier`.",
-          "`temporal_leak` when `available_hour` is not None and is greater than 6. Hour 6 is legal.",
-          "`name_leak` when the lowercased name contains any starter substring: discharge, death, mortal, expired, icu_transfer, future_, day2, outcome, los_.",
-          "`unknown_time` when a feature has no hour.",
+          "`label` — role is `label` (you never use the answer as an input).",
+          "`identifier` — role is `identifier` (patient id, hospital id, …).",
+          "`temporal_leak` — `available_hour` is not `None` and is greater than 6. Hour 6 itself is legal.",
+          "`name_leak` — lowercased name contains any of: discharge, death, mortal, expired, icu_transfer, future_, day2, outcome, los_.",
+          "`unknown_time` — it is a feature and hour is `None`.",
         ],
       },
       {
         type: "p",
-        text: "A bad name recorded with hour 6 is still a name leak. A late hour outranks a bad name. An empty registry returns an empty list. The checker includes a column called `Death` and a column whose hour is 7 with an otherwise clean name.",
+        text: "Return only flagged columns as `{\"name\", \"reason\"}`, in input order. Clean columns are omitted. A bad name with hour 6 is still a name leak. A late hour outranks a bad name. Empty input → `[]`.",
+      },
+      {
+        type: "h2",
+        text: "What to write",
+      },
+      {
+        type: "p",
+        text: "Implement `leakage_report(columns)`. The checker includes a column named `Death` and a clean-named column with hour 7.",
       },
     ],
   },
@@ -287,15 +433,33 @@ export const tasks: Task[] = [
     blocks: [
       {
         type: "p",
-        text: "Write `patient_temporal_split`. Date each patient by the earliest `time_key` among their rows. Sort patients by that timestamp, then by `str(patient_id)`. Take the last `ceil(test_fraction * n_patients)` patients as test, but always leave at least one patient on each side.",
+        text: "A random row shuffle can put the same person in train and test. That flatters you. Hold out whole patients, and put the latest arrivals in the test set.",
+      },
+      {
+        type: "h2",
+        text: "Recipe",
+      },
+      {
+        type: "ol",
+        items: [
+          "Group rows by patient id.",
+          "Date each patient by their earliest `time_key` (timestamps are comparable strings).",
+          "Sort patients by that time, then by `str(patient_id)`.",
+          "Test = last `ceil(test_fraction * n_patients)` patients, clamped so each side has at least one patient.",
+          "Every row of a patient stays together. Keep original row order inside train and inside test—do not sort the caller’s list in place.",
+        ],
       },
       {
         type: "p",
-        text: "All rows of a patient travel together. A later row must not pull an otherwise early patient into the test. Preserve the original row order inside each side, and do not sort the list the caller passed you. Timestamps are zero-padded strings. Raise `ValueError` when the fraction is not strictly inside (0, 1), or when fewer than two patients are present.",
+        text: "Example: patients first seen on Jan 1, 2, 3, 4. With `test_fraction=0.5`, test is the last two. If the Jan-2 patient also has a Jan-5 row, that row stays in train with them.",
       },
       {
-        type: "terminal",
-        text: "patients by first timestamp: b (Jan 1), a (Jan 2), c (Jan 3), d (Jan 4)\ntest_fraction 0.5 -> test patients c and d\npatient a also has a row on Jan 5, and that row stays in train",
+        type: "h2",
+        text: "What to write",
+      },
+      {
+        type: "p",
+        text: "Implement `patient_temporal_split(rows, patient_key, time_key, test_fraction)` returning `(train_rows, test_rows)`. Fraction not strictly inside (0, 1), or fewer than two patients → `ValueError`.",
       },
     ],
   },
@@ -315,19 +479,42 @@ export const tasks: Task[] = [
     blocks: [
       {
         type: "p",
-        text: "Write `clinical_metrics(y_true, y_prob, threshold)`. A row is positive when `y_prob >= threshold`. Return a dict with `sensitivity`, `specificity`, `ppv`, `npv`, `f1`, `brier`, `tp`, `fp`, `tn`, `fn`. Rates with a zero denominator are 0. F1 is `2*tp / (2*tp + fp + fn)`, or 0 when the denominator is 0. Brier is the mean of `(probability - label)^2`. Counts are Python ints.",
+        text: "A leaf (or any model) gives a probability. You still pick a cutoff t: call the case positive when probability ≥ t. Then every test row falls into TP, FP, TN, or FN.",
       },
       {
-        type: "p",
-        text: "Write `threshold_for_sensitivity(y_true, y_prob, target_sensitivity)`. Candidates are every distinct probability, plus 0 and 1. Return the highest candidate whose sensitivity is at least the target. If none qualify, return 0. This is how you keep specificity while buying a sensitivity floor. Do not return the lowest such threshold.",
+        type: "h2",
+        text: "Rates you already met on the concept pages",
       },
       {
         type: "ul",
         items: [
-          "Empty input, or sequences of different lengths, raises `ValueError` from both functions.",
-          "A target outside [0, 1] raises `ValueError`.",
-          "On labels `[1, 0, 1, 0]` and probabilities `[0.9, 0.8, 0.2, 0.1]` at threshold 0.5, every count is 1 and the Brier score is 0.325.",
+          "Sensitivity = TP / (TP+FN) — of true events, what fraction did you catch?",
+          "Specificity = TN / (TN+FP) — of non-events, what fraction did you leave alone?",
+          "PPV = TP / (TP+FP) — of alarms, what fraction were real?",
+          "NPV = TN / (TN+FN).",
+          "F1 = 2·TP / (2·TP + FP + FN).",
+          "Brier = mean of (probability − label)².",
         ],
+      },
+      {
+        type: "p",
+        text: "If a denominator is 0, that rate is 0. Worked check: labels `[1,0,1,0]`, probs `[0.9,0.8,0.2,0.1]`, threshold 0.5 → each of TP, FP, TN, FN is 1, and Brier = 0.325.",
+      },
+      {
+        type: "h2",
+        text: "Choosing the threshold",
+      },
+      {
+        type: "p",
+        text: "`threshold_for_sensitivity` tries every distinct probability plus 0 and 1. Return the highest cutoff whose sensitivity is still ≥ the target. Highest, not lowest—among cutoffs that catch enough events, pick the strictest. If none qualify, return 0.",
+      },
+      {
+        type: "h2",
+        text: "What to write",
+      },
+      {
+        type: "p",
+        text: "Implement `clinical_metrics(y_true, y_prob, threshold)` and `threshold_for_sensitivity(y_true, y_prob, target_sensitivity)`. Empty or mismatched lengths → `ValueError`. Target outside [0, 1] → `ValueError`. Counts in the metrics dict are Python ints.",
       },
     ],
   },
@@ -347,11 +534,15 @@ export const tasks: Task[] = [
     blocks: [
       {
         type: "p",
-        text: "500 synthetic admissions, one row each. The label `deteriorated` was drawn from a shallow rule plus noise. About a third of the cohort is positive, richer than a general ward, so the cuts are visible at this size. Several columns predict the label because they are consequences of the stay. Using them is a failing review, not a better model.",
+        text: "Put the pieces together. You get a list of admission dicts. Fit a tree only on facts known at hour 6, hold out later patients, freeze a threshold for sensitivity 0.80 on the training side, and return the fitted model with that threshold.",
+      },
+      {
+        type: "h2",
+        text: "What you may use",
       },
       {
         type: "table",
-        caption: "Decision time is hour 6. Allowed features are the ones marked use.",
+        caption: "Decision time is hour 6.",
         headers: ["Column", "Knowable", "In the matrix?"],
         rows: [
           ["patient_id, hospital_id, admission_time", "at arrival", "no — keys, not features"],
@@ -364,20 +555,25 @@ export const tasks: Task[] = [
         ],
       },
       {
-        type: "p",
-        text: "Write `train_early_warning(rows)`. The docstring lists the return value. Fit your own `DecisionTreeClassifier` on the training side of `patient_temporal_split(..., test_fraction=0.25)` only. Depth at most 4. Every leaf at least 10 training rows. `min_samples_leaf=15` is a sound default. Take the class-1 column of `predict_proba`, choose the threshold on the training rows for sensitivity 0.80, and return that frozen number.",
+        type: "h2",
+        text: "Recipe",
       },
       {
-        type: "p",
-        text: "The checker does not trust a metrics dict you compute yourself. It rebuilds the split, scores your model on the future patients, and checks that the threshold matches the training rule. It also walks `model.root` and checks leaf sizes. A second cohort, same generator and a different seed, is scored the same way. Hardcoding rows will not travel.",
+        type: "ol",
+        items: [
+          "Build the feature matrix from allowed columns only. List every forbidden column in `excluded`.",
+          "Split with `patient_temporal_split(..., test_fraction=0.25)`.",
+          "Fit your `DecisionTreeClassifier` on the training patients only. Depth ≤ 4. Every leaf ≥ 10 training rows (`min_samples_leaf=15` is a sound default).",
+          "Take class-1 probabilities on the training rows. Choose the threshold with `threshold_for_sensitivity(..., 0.80)`.",
+          "Return the dict described in the starter docstring (`model`, `features`, `threshold`, `excluded`).",
+        ],
       },
       {
         type: "callout",
         tone: "practice",
-        title: "The bar",
-        text: "On each future slice: sensitivity at least 0.75 and specificity at least 0.50. The training target stays 0.80. The gap is there because the next 125 patients are not the previous 375. `excluded` must name every forbidden column. `features` is at least four allowed names, with no duplicates.",
+        title: "How you are scored",
+        text: "The checker rebuilds the official split and scores your model on later patients. It checks that your threshold matches the training rule, walks `model.root` for leaf sizes, and requires test sensitivity ≥ 0.75 and specificity ≥ 0.50 on cohort A (shown) and hidden cohort B. Hardcoding rows will not travel.",
       },
-      { type: "p", text: "The first rows of the cohort you can see are below. Cohort B is not shown." },
     ],
   },
 ];

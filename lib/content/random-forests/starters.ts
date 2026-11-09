@@ -5,20 +5,20 @@ export const starters = {
 
 
 def bootstrap_sample(X, y, rng):
-    """Sample n row indices with replacement using rng.randrange(n).
+    """Draw n indices with rng.randrange(n) (with replacement).
 
-    Return (X_boot, y_boot, indices). Lengths of X and y must match and be >= 1.
+    Return (X_boot, y_boot, indices). X and y must be non-empty and same length.
     """
     raise NotImplementedError
 `,
   "majority-vote": `def majority_vote(labels):
-    """Most common label. Ties go to the smaller label. Empty input raises ValueError."""
+    """Most common label. Ties go to the smaller label. Empty -> ValueError."""
     raise NotImplementedError
 `,
   "mean-probability": `def mean_probability(prob_lists):
-    """Mean of each position across rows of equal-length probability lists.
+    """Average probability rows position-wise (soft vote).
 
-    Empty input is []. Ragged rows raise ValueError.
+    Empty input is []. Ragged rows -> ValueError.
     """
     raise NotImplementedError
 `,
@@ -26,7 +26,7 @@ def bootstrap_sample(X, y, rng):
 
 
 def max_features_count(n_features, max_features="sqrt"):
-    """Resolve max_features to an int in 1..n_features.
+    """How many columns to try at a split (1..n_features).
 
     "sqrt" -> max(1, floor(sqrt(n_features))). An int is clamped into range.
     """
@@ -34,7 +34,7 @@ def max_features_count(n_features, max_features="sqrt"):
 
 
 def random_feature_indices(n_features, max_features, rng):
-    """Sample without replacement using rng.sample. Return sorted indices."""
+    """Sample k indices with rng.sample; return them sorted."""
     raise NotImplementedError
 `,
   tree: `GAIN_TIE = 1e-12
@@ -65,9 +65,8 @@ class DecisionTreeClassifier:
 class RandomForestClassifier:
     """Bagged Gini trees with per-split feature randomness.
 
-    n_estimators trees, each on a bootstrap sample.
-    Tree kwargs: max_depth, min_samples_leaf, max_features ("sqrt" by default).
-    random_state seeds random.Random for bootstraps and feature draws.
+    Bootstrap with the master RNG; give each tree its own RNG for features.
+    predict majority-votes; predict_proba averages aligned probability rows.
     """
 
     def __init__(
@@ -87,25 +86,25 @@ class RandomForestClassifier:
         raise NotImplementedError
 
     def predict_proba(self, X):
-        """Return [[p0, p1], ...] with classes_ ordered. Average tree probabilities."""
+        """Return [[p0, p1], ...] ordered like classes_. Average tree probabilities."""
         raise NotImplementedError
 `,
   "feature-use": `def feature_use_counts(forest):
-    """Count how often each feature index appears as a split across forest.trees_.
+    """Tally split feature indices across forest.trees_.
 
     Length is forest.n_features_. Walk each tree.root; internal nodes have .feature.
     """
     raise NotImplementedError
 `,
   "threshold-sensitivity": `def threshold_for_sensitivity(y_true, y_prob, target=0.80):
-    """Highest threshold in {0.00, 0.01, ..., 1.00} with sensitivity >= target.
+    """Highest cutoff in {0.00, 0.01, ..., 1.00} with sensitivity >= target.
 
     If none qualify, return 0.0. Predict 1 when probability >= threshold.
     """
     raise NotImplementedError
 `,
   leakage: `def leakage_report(columns, decision_hour=6):
-    """Return [{name, reason}, ...] for illegal columns. First reason wins."""
+    """Flag illegal columns as [{name, reason}, ...]. First reason wins."""
     raise NotImplementedError
 `,
   "temporal-split": `def patient_temporal_split(rows, patient_key, time_key, fraction):
@@ -134,14 +133,11 @@ class RandomForestClassifier:
 def train_forest_early_warning(rows):
     """Fit hour-6 random forest for deteriorated.
 
-    Use only ALLOWED_FEATURES, patient_temporal_split with fraction 0.25,
+    ALLOWED_FEATURES only, temporal split 0.25,
     RandomForestClassifier(n_estimators=25, max_depth=4, min_samples_leaf=15,
     max_features="sqrt", random_state=0).
-    Choose the threshold on the training side for sensitivity 0.80.
-    Return a dict with keys:
-      threshold, train_sensitivity, train_specificity,
-      test_sensitivity, test_specificity, feature_names, model
-    feature_names is list(ALLOWED_FEATURES).
+    Threshold on train class-1 probs for sensitivity 0.80.
+    Return threshold, train/test sensitivity and specificity, feature_names, model.
     """
     raise NotImplementedError
 `,

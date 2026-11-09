@@ -2,9 +2,10 @@
 
 export const starters: Record<string, string> = {
   gini: `def gini_impurity(labels: list[int]) -> float:
-    """Gini impurity, 1 - sum(p_k^2).
+    """How mixed is this bag of class labels?
 
-    Empty input is 0. Label order does not matter. One class is 0.
+    Count each class, turn counts into shares p_k, return 1 - sum(p_k^2).
+    Empty list -> 0. One class only -> 0. Order does not matter.
     """
     raise NotImplementedError
 `,

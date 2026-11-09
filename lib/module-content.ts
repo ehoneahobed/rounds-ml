@@ -46,6 +46,19 @@ import {
   tasks as logTasks,
   TOTAL_POINTS as logPoints,
 } from "@/lib/content/logistic-regression/tasks";
+import {
+  conceptBySlug as forestConceptBySlug,
+  conceptNeighbors as forestConceptNeighbors,
+  concepts as forestConcepts,
+} from "@/lib/content/random-forests/concepts";
+import { PASS_MARK as forestPassMark, questions as forestQuestions } from "@/lib/content/random-forests/quiz";
+import {
+  earlierTasks as forestEarlierTasks,
+  LEVEL_LABELS as forestLevels,
+  taskBySlug as forestTaskBySlug,
+  tasks as forestTasks,
+  TOTAL_POINTS as forestPoints,
+} from "@/lib/content/random-forests/tasks";
 import type { Concept, Task, TaskLevel } from "@/lib/content/types";
 import type { Question } from "@/lib/content/quiz";
 import type { ModuleId, ModuleMeta } from "@/lib/modules";
@@ -148,11 +161,33 @@ const TREE_CONTENT: ModuleContent = {
   },
 };
 
+const FOREST_CONTENT: ModuleContent = {
+  concepts: forestConcepts,
+  conceptBySlug: forestConceptBySlug,
+  conceptNeighbors: forestConceptNeighbors,
+  questions: forestQuestions,
+  passMark: forestPassMark,
+  tasks: forestTasks,
+  taskBySlug: forestTaskBySlug,
+  earlierTasks: forestEarlierTasks,
+  levelLabels: forestLevels,
+  totalPoints: forestPoints,
+  wardNote: {
+    title: "Ward note",
+    lead: "Write this the way you would open a model review. Three short answers, each at least a sentence, and an honest tick that you reasoned about bagging or a vote by hand. Nothing here is uploaded.",
+    refusedLabel: "Which columns did you refuse, and what decision time made them illegal?",
+    thresholdLabel: "Where did the threshold come from, and what sensitivity were you buying?",
+    failureLabel: "Name one way this random-forest early-warning score fails on a real ward.",
+    handLabel: "I computed at least one bootstrap vote, mean probability, or threshold by hand before I trusted the editor.",
+  },
+};
+
 const BY_ID: Record<ModuleId, ModuleContent> = {
   introduction: INTRO_CONTENT,
   "linear-regression": LINE_CONTENT,
   "logistic-regression": LOG_CONTENT,
   "decision-trees": TREE_CONTENT,
+  "random-forests": FOREST_CONTENT,
 };
 
 /** Content pack for a module. */

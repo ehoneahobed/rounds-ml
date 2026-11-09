@@ -444,7 +444,7 @@ y_prob = tree.predict_proba(X_test)[:, 1]`,
       },
       {
         type: "p",
-        text: "A finished review of this tree is not only a score. Write down: which columns you refused and why (hour 6), which threshold you froze and what sensitivity you were buying, and one honest failure mode. Examples of failure modes: a leaf with n=2 that looks certain; a hospital id that memorized a ward; a lactate assay at site B that reads 15% lower, so the same blood crosses your cut differently. That short note is the ward note at the end of the module.",
+        text: "A finished review of this tree is not only a score. Write down: which columns you refused and why (hour 6), which threshold you froze and what sensitivity you were buying, and one honest failure mode. Examples of failure modes: a leaf with n=2 that looks certain; a hospital id that memorized a ward; a lactate assay at site B that reads 15% lower, so the same blood crosses your cut differently. That short note is the ward note at the end of the module. Next, random forests bag many trees so one brittle flowchart is not the whole model.",
       },
     ],
   },

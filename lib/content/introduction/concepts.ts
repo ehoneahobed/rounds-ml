@@ -98,7 +98,7 @@ export const concepts: Concept[] = [
         type: "ul",
         items: [
           "Linear models: a weighted sum of features (plus a bias). Linear regression predicts a number. Logistic regression pushes that same kind of score through a sigmoid to get a probability for a class.",
-          "Tree models: a flowchart of yes/no questions about features. Decision trees grow one flowchart. Random forests and gradient-boosted trees combine many trees. Rounds builds a single tree from scratch after you have felt linear and logistic.",
+          "Tree models: a flowchart of yes/no questions about features. Decision trees grow one flowchart. Random forests and gradient-boosted trees combine many trees. Rounds builds a single tree, then a forest, after you have felt linear and logistic.",
           "Nearest neighbors: remember the training rows; predict from the closest ones. Simple idea, can be slow and sensitive to scale.",
           "Support vector machines: find a boundary with a margin. Important historically; less central to this path.",
           "Neural networks: stacked linear scores and nonlinearities. They are still supervised when you train them with labels—they are a flexible function family, not a fourth learning paradigm.",
@@ -208,6 +208,7 @@ export const concepts: Concept[] = [
           "Linear regression — predict a number with a line; learn error, fitting, and honest train/test habits. The project uses a continuous clinical outcome, but the line is the same tool you would use for price or delay.",
           "Logistic regression — reuse the linear score; turn it into a probability; learn thresholds and classification metrics. The project is a binary risk score.",
           "Decision trees — answer a classification question with a flowchart of questions, so you can compare shapes against the logistic score.",
+          "Random forests — bag many trees with random feature subsets and vote, so one brittle tree is not the whole model.",
         ],
       },
       {

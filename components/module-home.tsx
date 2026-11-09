@@ -15,6 +15,8 @@ const LEADS: Record<ModuleId, string> = {
     "Keep the linear score, push it through a sigmoid, and get a probability for a yes/no label. The project is a binary risk score.",
   "decision-trees":
     "Answer a classification question with a flowchart of questions instead of weights—then compare that shape to the logistic score.",
+  "random-forests":
+    "Bag many trees on bootstrap samples, keep them different with random features, and vote. The project is the same early-warning question as the single tree.",
 };
 
 /**
@@ -110,14 +112,22 @@ export function ModuleHome() {
             <Link href={moduleHref(active, "/lab")} className="block py-6 hover:bg-secondary/40">
               <p className="font-mono text-xs text-muted">Optional</p>
               <p className="mt-1 font-serif text-3xl tracking-tight">
-                {active.lab === "line" ? "Line lab" : active.lab === "sigmoid" ? "Sigmoid lab" : "Tree lab"}
+                {active.lab === "line"
+                  ? "Line lab"
+                  : active.lab === "sigmoid"
+                    ? "Sigmoid lab"
+                    : active.lab === "forest"
+                      ? "Forest lab"
+                      : "Tree lab"}
               </p>
               <p className="mt-2 text-base leading-relaxed text-muted">
                 {active.lab === "line"
                   ? "Drag slope and intercept on the teaching patients."
                   : active.lab === "sigmoid"
                     ? "Drag a score on the S-curve and move the threshold."
-                    : "Open the teaching tree and walk a patient down the branches."}
+                    : active.lab === "forest"
+                      ? "Watch several trees vote, then read the majority and mean probability."
+                      : "Open the teaching tree and walk a patient down the branches."}
               </p>
               <p className="mt-3 text-sm font-semibold text-green">Open the lab →</p>
             </Link>

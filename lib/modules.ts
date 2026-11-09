@@ -7,10 +7,11 @@ export type ModuleId =
   | "introduction"
   | "linear-regression"
   | "logistic-regression"
-  | "decision-trees";
+  | "decision-trees"
+  | "random-forests";
 
 /** Interactive lab kind for a module, or null when the module has no lab. */
-export type LabKind = "tree" | "line" | "sigmoid" | null;
+export type LabKind = "tree" | "line" | "sigmoid" | "forest" | null;
 
 export type ModuleMeta = {
   id: ModuleId;
@@ -97,12 +98,30 @@ export const DECISION_TREES: ModuleMeta = {
   hasWardNote: true,
 };
 
+export const RANDOM_FORESTS: ModuleMeta = {
+  id: "random-forests",
+  code: "0x05",
+  title: "Random forests",
+  basePath: "/random-forests",
+  storageKey: "rounds-random-forests-v1",
+  taskCodePrefix: "rounds-rf-task-code",
+  summary: "Bag many trees and vote; the project is an early-warning score you can compare to a single tree.",
+  graderTestsPath: "/grader/random-forests/tests",
+  cohortFiles: [
+    { url: "/data/cohort_a.json", path: "/data/cohort_a.json" },
+    { url: "/data/cohort_b.json", path: "/data/cohort_b.json" },
+  ],
+  lab: "forest",
+  hasWardNote: true,
+};
+
 /** Teaching order: map first, then supervised models that build on each other. */
 export const MODULES: ModuleMeta[] = [
   INTRODUCTION,
   LINEAR_REGRESSION,
   LOGISTIC_REGRESSION,
   DECISION_TREES,
+  RANDOM_FORESTS,
 ];
 
 /** Resolve a module from a pathname, or null on the site home / unknown paths. */

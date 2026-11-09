@@ -143,9 +143,23 @@ export function ModuleSidebar({ module, collapsed, mobileOpen, onCloseMobile }: 
               compact={compact}
               onNavigate={onCloseMobile}
               short="L"
-              title={module.lab === "line" ? "Line lab" : module.lab === "sigmoid" ? "Sigmoid lab" : "Tree lab"}
+              title={
+                module.lab === "line"
+                  ? "Line lab"
+                  : module.lab === "sigmoid"
+                    ? "Sigmoid lab"
+                    : module.lab === "forest"
+                      ? "Forest lab"
+                      : "Tree lab"
+              }
             >
-              {module.lab === "line" ? "Line lab" : module.lab === "sigmoid" ? "Sigmoid lab" : "Tree lab"}
+              {module.lab === "line"
+                ? "Line lab"
+                : module.lab === "sigmoid"
+                  ? "Sigmoid lab"
+                  : module.lab === "forest"
+                    ? "Forest lab"
+                    : "Tree lab"}
             </NavLink>
           ) : null}
         </nav>

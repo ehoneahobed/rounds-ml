@@ -13,7 +13,7 @@ export default function HomePage() {
       <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted">Machine learning study</p>
       <h1 className="mt-2 font-serif text-4xl tracking-tight sm:text-5xl">Rounds</h1>
       <p className="mt-3 text-lg leading-relaxed">
-        Start with the map, then build supervised models in order: a line for numbers, a sigmoid for yes/no, then a tree for the same kind of question with a different shape. Examples span domains; later projects use synthetic practice data. Progress stays in this browser.
+        Start with the map, then build supervised models in order: a line for numbers, a sigmoid for yes/no, a tree, then a forest of trees. Examples span domains; later projects use synthetic practice data. Progress stays in this browser.
       </p>
       <ul className="mt-10 divide-y divide-line border-y border-line">
         {MODULES.map((module) => (

@@ -17,6 +17,15 @@ export function WardNoteForm() {
   const [saved, setSaved] = useState(false);
   const note = draft ?? progress.wardNote ?? EMPTY;
 
+  if (!copy) {
+    return (
+      <div className="max-w-3xl">
+        <h1 className="font-serif text-4xl tracking-tight">No ward note</h1>
+        <p className="mt-3 text-lg leading-relaxed">This module is orientation only. There is nothing to hand over here.</p>
+      </div>
+    );
+  }
+
   function update(partial: Partial<WardNote>) {
     setDraft({ ...note, ...partial });
     setSaved(false);

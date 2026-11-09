@@ -1,9 +1,16 @@
 /**
  * The study modules shipped in Rounds.
- * Each module lives under its own base path. The site root lists them.
+ * Each module lives under its own base path. The site root lists them in teaching order.
  */
 
-export type ModuleId = "decision-trees" | "linear-regression";
+export type ModuleId =
+  | "introduction"
+  | "linear-regression"
+  | "logistic-regression"
+  | "decision-trees";
+
+/** Interactive lab kind for a module, or null when the module has no lab. */
+export type LabKind = "tree" | "line" | "sigmoid" | null;
 
 export type ModuleMeta = {
   id: ModuleId;
@@ -19,21 +26,24 @@ export type ModuleMeta = {
   graderTestsPath: string;
   /** Cohort files copied into the Pyodide filesystem when a task asks for them. */
   cohortFiles: { url: string; path: string }[];
+  /** Interactive lab, if this module has one. */
+  lab: LabKind;
+  /** Whether the module ends with a ward note. */
+  hasWardNote: boolean;
 };
 
-export const DECISION_TREES: ModuleMeta = {
-  id: "decision-trees",
+export const INTRODUCTION: ModuleMeta = {
+  id: "introduction",
   code: "0x01",
-  title: "Decision trees",
-  basePath: "/decision-trees",
-  storageKey: "rounds-decision-trees-v1",
-  taskCodePrefix: "rounds-task-code",
-  summary: "Grow a classification tree and fit an hour-6 early-warning score.",
-  graderTestsPath: "/grader/tests",
-  cohortFiles: [
-    { url: "/data/cohort_a.json", path: "/data/cohort_a.json" },
-    { url: "/data/cohort_b.json", path: "/data/cohort_b.json" },
-  ],
+  title: "Introduction to machine learning",
+  basePath: "/introduction",
+  storageKey: "rounds-introduction-v1",
+  taskCodePrefix: "rounds-intro-task-code",
+  summary: "What ML is, how models learn, and where the rest of Rounds sits on the map.",
+  graderTestsPath: "/grader/introduction/tests",
+  cohortFiles: [],
+  lab: null,
+  hasWardNote: false,
 };
 
 export const LINEAR_REGRESSION: ModuleMeta = {
@@ -43,15 +53,57 @@ export const LINEAR_REGRESSION: ModuleMeta = {
   basePath: "/linear-regression",
   storageKey: "rounds-linear-regression-v1",
   taskCodePrefix: "rounds-linreg-task-code",
-  summary: "Fit a line from scratch and predict length of stay from the hour-6 chart.",
+  summary: "Fit a line from scratch; the project predicts a continuous outcome from early features.",
   graderTestsPath: "/grader/linear-regression/tests",
   cohortFiles: [
     { url: "/data/los_cohort_a.csv", path: "/data/los_cohort_a.csv" },
     { url: "/data/los_cohort_b.csv", path: "/data/los_cohort_b.csv" },
   ],
+  lab: "line",
+  hasWardNote: true,
 };
 
-export const MODULES: ModuleMeta[] = [DECISION_TREES, LINEAR_REGRESSION];
+export const LOGISTIC_REGRESSION: ModuleMeta = {
+  id: "logistic-regression",
+  code: "0x03",
+  title: "Logistic regression",
+  basePath: "/logistic-regression",
+  storageKey: "rounds-logistic-regression-v1",
+  taskCodePrefix: "rounds-logreg-task-code",
+  summary: "Turn a linear score into a probability; the project is a binary risk score.",
+  graderTestsPath: "/grader/logistic-regression/tests",
+  cohortFiles: [
+    { url: "/data/cohort_a.json", path: "/data/cohort_a.json" },
+    { url: "/data/cohort_b.json", path: "/data/cohort_b.json" },
+  ],
+  lab: "sigmoid",
+  hasWardNote: true,
+};
+
+export const DECISION_TREES: ModuleMeta = {
+  id: "decision-trees",
+  code: "0x04",
+  title: "Decision trees",
+  basePath: "/decision-trees",
+  storageKey: "rounds-decision-trees-v1",
+  taskCodePrefix: "rounds-task-code",
+  summary: "Grow a classification tree; the project is an early-warning score you can compare to logistic regression.",
+  graderTestsPath: "/grader/tests",
+  cohortFiles: [
+    { url: "/data/cohort_a.json", path: "/data/cohort_a.json" },
+    { url: "/data/cohort_b.json", path: "/data/cohort_b.json" },
+  ],
+  lab: "tree",
+  hasWardNote: true,
+};
+
+/** Teaching order: map first, then supervised models that build on each other. */
+export const MODULES: ModuleMeta[] = [
+  INTRODUCTION,
+  LINEAR_REGRESSION,
+  LOGISTIC_REGRESSION,
+  DECISION_TREES,
+];
 
 /** Resolve a module from a pathname, or null on the site home / unknown paths. */
 export function moduleFromPath(pathname: string): ModuleMeta | null {

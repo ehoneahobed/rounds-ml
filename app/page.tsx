@@ -10,10 +10,10 @@ export const metadata: Metadata = {
 export default function HomePage() {
   return (
     <div className="max-w-3xl">
-      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted">Clinical ML study</p>
+      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted">Machine learning study</p>
       <h1 className="mt-2 font-serif text-4xl tracking-tight sm:text-5xl">Rounds</h1>
       <p className="mt-3 text-lg leading-relaxed">
-        Choose a module. Each one is its own project: concept pages, a knowledge check, auto-graded tasks in the browser, and a ward note. Progress stays here, separately for each module.
+        Start with the map, then build supervised models in order: a line for numbers, a sigmoid for yes/no, then a tree for the same kind of question with a different shape. Examples span domains; later projects use synthetic practice data. Progress stays in this browser.
       </p>
       <ul className="mt-10 divide-y divide-line border-y border-line">
         {MODULES.map((module) => (

@@ -1,0 +1,6 @@
+tp, fp, tn, fn = confusion_counts([1, 1, 0, 0], [0.9, 0.4, 0.6, 0.1], 0.5)
+check("counts", (tp, fp, tn, fn) == (1, 1, 1, 1))
+check("sens", abs(sensitivity(40, 30, 120, 10) - 0.8) < 1e-12)
+check("spec", abs(specificity(40, 30, 120, 10) - 0.8) < 1e-12)
+check("ppv", abs(positive_predictive_value(40, 30, 120, 10) - 40 / 70) < 1e-12)
+check("empty_den", sensitivity(0, 0, 0, 0) == 0.0)

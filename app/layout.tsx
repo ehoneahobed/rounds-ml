@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     template: "%s · Rounds",
   },
   description:
-    "Clinical ML study modules: concepts, knowledge checks, and auto-graded tasks on synthetic admissions.",
+    "Machine learning study modules: concepts, knowledge checks, and auto-graded tasks on synthetic practice data.",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

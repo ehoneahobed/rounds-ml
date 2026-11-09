@@ -14,11 +14,11 @@ export const track: Concept[] = [
     blocks: [
       {
         type: "p",
-        text: "Linear and logistic regression learn weights. When you say those models are trained, you mean the weights and bias settled. A decision tree is different. Training means building a flowchart: a short list of yes/no questions about the features. The trained model is that flowchart. You walk a new row down it to get a prediction.",
+        text: "Linear and logistic regression learn weights. When you say those models are trained, you mean the weights and bias settled. A decision tree is different. Training means building a flowchart: a short list of yes/no questions about the features. The trained model is that flowchart. You walk a new row down it to get a prediction. Same contrast whether the rows are loans, tickets, or—in this module’s project—admissions.",
       },
       {
         type: "p",
-        text: "Trees are supervised learning: you learn from past rows that already have the answer written down. That answer can be a class (did they deteriorate: 0 or 1) or a number (how many days they stayed). Most of this module uses the 0-or-1 case. A later page covers the number case—you still ask yes/no questions about the features, but the leaf stores an average instead of a majority vote.",
+        text: "Trees are supervised learning: you learn from past rows that already have the answer written down. That answer can be a class (0 or 1) or a number. Most of this module uses the 0-or-1 case. A later page covers the number case—you still ask yes/no questions about the features, but the leaf stores an average instead of a majority vote.",
       },
       {
         type: "p",
@@ -30,7 +30,7 @@ export const track: Concept[] = [
       },
       {
         type: "p",
-        text: "Here are eight people who were already in hospital. For each one we know two facts at the bedside: their lactate (a blood test) and their age. We also know what happened next: whether they got meaningfully worse within 48 hours. Write 1 if they did, 0 if they did not. Those two facts are what we may ask about. That 0-or-1 outcome is what we are trying to predict.",
+        text: "Here are eight rows. Each has two features and a 0/1 label. In the teaching lab those columns are named lactate and age, and the label is deterioration—because that matches this module’s project data. Mentally swap them for “debt ratio” and “income,” or “cart value” and “visits,” if that helps you. The split logic does not care about the names.",
       },
       { type: "lab" },
       {

@@ -32,16 +32,16 @@ export function LineLab() {
         <div className="relative min-h-[28rem] bg-[#101820] p-4">
           <ScatterPlot points={points} slope={slope} intercept={intercept} />
           <p className="pointer-events-none absolute bottom-3 left-3 right-3 text-center font-mono text-[11px] text-[#c8c1b4]">
-            Lactate across · length of stay up · gold sticks are residuals
+            Feature x across · label y up · gold sticks are residuals
           </p>
         </div>
         <aside className="flex max-h-[calc(100vh-9.5rem)] flex-col overflow-y-auto border-t border-[#243140] bg-[#f4f0e8] text-ink lg:border-t-0 lg:border-l">
           <div className="border-b border-line px-4 py-4">
             <LabBack />
             <p className="mt-4 text-xs font-semibold uppercase tracking-[0.16em] text-gold">Line lab</p>
-            <h1 className="mt-1 font-serif text-2xl tracking-tight">Six patients, one line</h1>
+            <h1 className="mt-1 font-serif text-2xl tracking-tight">Six rows, one line</h1>
             <p className="mt-2 text-sm leading-relaxed">
-              Each point is an admission. Move the slope and intercept. The gold sticks are residuals: truth minus prediction. The teaching table fits exactly when the slope is 2 and the intercept is 1.
+              Each point is one training row. Move the slope and intercept. The gold sticks are residuals: truth minus prediction. The teaching table fits exactly when the slope is 2 and the intercept is 1.
             </p>
           </div>
           <div className="space-y-5 px-4 py-4">
@@ -56,7 +56,7 @@ export function LineLab() {
             <section aria-live="polite">
               <h2 className="text-xs font-semibold uppercase tracking-[0.14em] text-muted">Readout</h2>
               <p className="mt-2 font-mono text-sm">
-                ŷ = {intercept.toFixed(2)} + {slope.toFixed(2)} × lactate
+                ŷ = {intercept.toFixed(2)} + {slope.toFixed(2)} × x
               </p>
               <p className="mt-1 font-mono text-sm">MSE = {mse.toFixed(4)}</p>
               <ol className="mt-3 space-y-1 font-mono text-xs leading-relaxed">
@@ -98,7 +98,7 @@ function ScatterPlot({
   const y1 = intercept + slope * x1;
 
   return (
-    <svg viewBox={`0 0 ${width} ${height}`} className="h-full w-full" role="img" aria-label="Lactate against length of stay with a fitted line">
+    <svg viewBox={`0 0 ${width} ${height}`} className="h-full w-full" role="img" aria-label="Feature against label with a fitted line">
       <rect x="0" y="0" width={width} height={height} fill="#101820" />
       <line x1={sx(x0)} y1={sy(y0)} x2={sx(x1)} y2={sy(y1)} stroke="#e2b340" strokeWidth="2.5" />
       {points.map((point) => (
@@ -108,10 +108,10 @@ function ScatterPlot({
         </g>
       ))}
       <text x={width / 2} y={height - 12} textAnchor="middle" fill="#c8c1b4" fontSize="13">
-        lactate
+        feature x
       </text>
       <text x="16" y={height / 2} textAnchor="middle" fill="#c8c1b4" fontSize="13" transform={`rotate(-90 16 ${height / 2})`}>
-        length of stay
+        label y
       </text>
     </svg>
   );

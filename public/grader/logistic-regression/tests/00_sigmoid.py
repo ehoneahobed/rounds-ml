@@ -1,0 +1,6 @@
+check("half", abs(sigmoid(0.0) - 0.5) < 1e-12)
+vals = sigmoid([-2.0, 2.0])
+check("list", abs(vals[0] - 1 / (1 + __import__("math").exp(2))) < 1e-12)
+check("list_hi", abs(vals[1] - 1 / (1 + __import__("math").exp(-2))) < 1e-12)
+check("large", 0.999 < sigmoid(1000.0) <= 1.0)
+check("small", 0.0 <= sigmoid(-1000.0) < 0.001)

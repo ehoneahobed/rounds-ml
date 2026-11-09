@@ -14,15 +14,15 @@ export const concepts: Concept[] = [
     blocks: [
       {
         type: "p",
-        text: "At hour 6 of an admission you have vitals and labs already resulted. The question in this module is how many days the stay will last—a number, not a yes/no. That number is the label. Features are columns you are allowed to use at decision time. Length of stay itself is not a feature.",
+        text: "Often the thing you want is a number: price from apartment size, delivery minutes from distance and traffic, exam score from hours studied. That number is the label. Features are columns you are allowed to use at decision time—not the label itself, and not facts that only appear after you would have had to predict.",
       },
       {
         type: "p",
-        text: "A decision tree answers with a flowchart of ≤ / > questions. Linear regression answers with a line: multiply features by weights, add a bias, get a prediction. Training means finding those weights. The trained model is the weights—not a tree of questions.",
+        text: "Linear regression answers with a line: multiply features by weights, add a bias, get a prediction. Training means finding those weights. The trained model is the weights. Later modules will reuse this score for probabilities (logistic regression) and then contrast it with a flowchart of questions (decision trees).",
       },
       {
         type: "p",
-        text: "With one feature \\(x\\) (here lactate) the line is",
+        text: "This module’s graded project happens to predict length of stay from early chart facts—one continuous-outcome story among many. The teaching table below uses the same numbers the line lab uses, so you can feel the fit by hand. With one feature \\(x\\) the line is",
       },
       {
         type: "math",
@@ -30,12 +30,12 @@ export const concepts: Concept[] = [
       },
       {
         type: "p",
-        text: "\\(w\\) is the slope: days of predicted stay per unit of lactate. \\(b\\) is the intercept: the prediction when lactate is 0. On the six-patient teaching table below, the exact fit is slope 2 and intercept 1, so \\(\\hat{y} = 2x + 1\\). Lactate 1.5 predicts 4 days.",
+        text: "\\(w\\) is the slope: change in prediction per unit of \\(x\\). \\(b\\) is the intercept: the prediction when \\(x\\) is 0. On the six-row teaching table below, the exact fit is slope 2 and intercept 1, so \\(\\hat{y} = 2x + 1\\). When \\(x = 1.5\\), the prediction is 4.",
       },
       {
         type: "table",
-        caption: "Six admissions. Length of stay here is exactly 1 + 2 × lactate.",
-        headers: ["Patient", "Lactate", "Length of stay (days)"],
+        caption: "Six teaching rows. Label = 1 + 2 × feature (exact fit).",
+        headers: ["Row", "Feature x", "Label y"],
         rows: [
           ["A", "0.8", "2.6"],
           ["B", "1.2", "3.4"],
@@ -96,7 +96,7 @@ export const concepts: Concept[] = [
       {
         type: "reveal",
         title: "Pause and compute",
-        prompt: "Wrong line: slope 0.5, intercept 3. Patient A has lactate 0.8 and los 2.6. What is the residual?",
+        prompt: "Wrong line: slope 0.5, intercept 3. Row A has x = 0.8 and y = 2.6. What is the residual?",
         answer: "Prediction \\(3 + 0.5\\times 0.8 = 3.4\\). Residual \\(2.6 - 3.4 = -0.8\\).",
       },
       {
@@ -155,7 +155,7 @@ export const concepts: Concept[] = [
       },
       {
         type: "p",
-        text: "Features on different scales (age vs lactate) make gradients and penalties awkward. Standardize using means and standard deviations from the training patients only—never pool test rows into those statistics.",
+        text: "Features on different scales (square feet vs number of bathrooms; age vs a lab value) make gradients and penalties awkward. Standardize using means and standard deviations from the training rows only—never pool test rows into those statistics.",
       },
       {
         type: "p",
@@ -167,17 +167,17 @@ export const concepts: Concept[] = [
       },
       {
         type: "p",
-        text: "Predict length of stay with facts known at hour 6. Refuse death, disposition, future labs, identifiers, and name leaks such as a column containing `los_` even if someone stamped available_hour 6. Hold out whole patients with later arrivals in the test set—random row splits flatter you.",
+        text: "In any domain: only use facts known at decision time. This project’s decision time is hour 6 of an admission—refuse death, disposition, future labs, identifiers, and name leaks such as a column containing `los_`. The same rule is “don’t use next month’s default status to approve today’s loan.” Hold out whole people (or accounts) with later arrivals in the test set—random row splits flatter you.",
       },
       {
         type: "p",
-        text: "Test MAE in days is the average absolute miss on those later arrivals. R² says how much better you are than predicting the training mean. An assay that reads 15% low at hospital B feeds the same slope a different number—the predicted stay moves with the assay, not only with the patient.",
+        text: "Test MAE is the average absolute miss on those later arrivals (here, in days). R² says how much better you are than predicting the training mean. A measurement that reads 15% low at site B feeds the same slope a different number—the prediction moves with the sensor, not only with the case.",
       },
       {
         type: "callout",
         tone: "practice",
         title: "What you hand over",
-        text: "Columns refused, train/test errors in days, and one failure mode (assay shift, small n, wrong decision time). That is the ward note for this module.",
+        text: "Columns refused, train/test errors, and one failure mode (sensor shift, small n, wrong decision time). That short review is the ward note for this module.",
       },
     ],
   },

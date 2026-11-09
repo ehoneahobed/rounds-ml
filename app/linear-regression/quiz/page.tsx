@@ -5,6 +5,6 @@ export const metadata: Metadata = {
   title: "Knowledge check",
 };
 
-export default function QuizPage() {
+export default function LinearRegressionQuizPage() {
   return <QuizRunner />;
 }

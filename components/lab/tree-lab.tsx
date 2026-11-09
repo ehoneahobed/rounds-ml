@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useState } from "react";
+import { LabBack } from "@/components/lab/lab-back";
 import { Button } from "@/components/ui/button";
 import {
   AGE_CUT,
@@ -69,7 +70,8 @@ export function TreeLab() {
         </div>
         <aside className="flex max-h-[calc(100vh-9.5rem)] flex-col overflow-y-auto border-t border-[#243140] bg-[#f4f0e8] text-ink lg:border-t-0 lg:border-l">
           <div className="border-b border-line px-4 py-4">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-gold">
+            <LabBack />
+            <p className="mt-4 text-xs font-semibold uppercase tracking-[0.16em] text-gold">
               Mission {missionIndex + 1} of {missions.length}
             </p>
             <h1 className="mt-1 font-serif text-2xl tracking-tight">{mission.title}</h1>

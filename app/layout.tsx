@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     template: "%s · Rounds",
   },
   description:
-    "A decision-tree project: impurity, splits, and an hour-6 early-warning score on synthetic admissions.",
+    "Clinical ML study modules: concepts, knowledge checks, and auto-graded tasks on synthetic admissions.",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

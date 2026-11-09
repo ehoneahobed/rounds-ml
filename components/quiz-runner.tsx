@@ -2,11 +2,17 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { PASS_MARK, questions, type ChoiceId } from "@/lib/content/quiz";
+import type { ChoiceId } from "@/lib/content/quiz";
+import { contentFor } from "@/lib/module-content";
+import { useModule } from "@/lib/module-context";
 import { loadProgress, saveProgress, useStudyProgress } from "@/lib/progress";
 
-/** Sixteen questions, scored locally. The best score is what the module keeps. */
+/** Knowledge check scored locally. The best score is what the module keeps. */
 export function QuizRunner() {
+  const module = useModule();
+  const content = contentFor(module);
+  const questions = content.questions;
+  const passMark = content.passMark;
   const progress = useStudyProgress();
   const [answers, setAnswers] = useState<Record<string, ChoiceId | undefined>>({});
   const [submitted, setSubmitted] = useState(false);
@@ -14,14 +20,14 @@ export function QuizRunner() {
 
   const answered = questions.filter((question) => answers[question.id]).length;
   const score = questions.filter((question) => answers[question.id] === question.correct).length;
-  const passed = score >= PASS_MARK;
+  const passed = score >= passMark;
 
   function submit() {
     setSubmitted(true);
-    const current = loadProgress();
+    const current = loadProgress(module.storageKey);
     const quizBest = current.quizBest === null ? score : Math.max(current.quizBest, score);
-    const next = { ...current, quizBest, quizPassed: current.quizPassed || score >= PASS_MARK };
-    saveProgress(next);
+    const next = { ...current, quizBest, quizPassed: current.quizPassed || score >= passMark };
+    saveProgress(next, module.storageKey);
   }
 
   function retake() {
@@ -31,10 +37,13 @@ export function QuizRunner() {
 
   return (
     <div className="max-w-3xl">
-      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted">Knowledge check · {questions.length} questions · pass at {PASS_MARK}</p>
+      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted">
+        Knowledge check · {questions.length} questions · pass at {passMark}
+      </p>
       <h1 className="mt-2 font-serif text-4xl tracking-tight">Before the tasks</h1>
       <p className="mt-3 text-lg leading-relaxed">
-        These are the calculations and the judgments from the concept pages. A wrong answer is more useful here than in the editor. Best score so far: {best === null ? "not taken" : `${best}/${questions.length}`}.
+        These are the calculations and the judgments from the concept pages. A wrong answer is more useful here than in the editor. Best score so far:{" "}
+        {best === null ? "not taken" : `${best}/${questions.length}`}.
       </p>
       <ol className="mt-8 space-y-8">
         {questions.map((question, index) => {
@@ -67,7 +76,9 @@ export function QuizRunner() {
                         <span>
                           <span className="font-mono text-sm text-muted">{choice.id}. </span>
                           {choice.text}
-                          {show && choice.id === question.correct ? <span className="ml-2 text-xs font-semibold uppercase tracking-wide text-green">Correct</span> : null}
+                          {show && choice.id === question.correct ? (
+                            <span className="ml-2 text-xs font-semibold uppercase tracking-wide text-green">Correct</span>
+                          ) : null}
                         </span>
                       </label>
                     );
@@ -83,7 +94,7 @@ export function QuizRunner() {
         {submitted ? (
           <>
             <p className="font-serif text-2xl" role="status">
-              {score}/{questions.length}. {passed ? "That clears the check." : `The bar is ${PASS_MARK}.`}
+              {score}/{questions.length}. {passed ? "That clears the check." : `The bar is ${passMark}.`}
             </p>
             <Button type="button" variant="outline" onClick={retake}>
               Retake

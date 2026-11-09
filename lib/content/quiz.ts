@@ -9,7 +9,7 @@ export type Question = {
 };
 
 /** Score required to clear the knowledge check. */
-export const PASS_MARK = 13;
+export const PASS_MARK = 14;
 
 export const questions: Question[] = [
   {
@@ -104,6 +104,18 @@ export const questions: Question[] = [
     correct: "B",
     explanation:
       "The counts tie. This module keeps the smaller label, which is 0. The probability of that class is 0.50, and the predicted class is still 0.",
+  },
+  {
+    id: "regression-variance",
+    prompt: "What is the population variance of the targets [10, 10, 0, 0]? (Divide by n, not n−1.)",
+    choices: [
+      { id: "A", text: "25" },
+      { id: "B", text: "50" },
+      { id: "C", text: "0" },
+      { id: "D", text: "5" },
+    ],
+    correct: "A",
+    explanation: "Mean is 5. Squared deviations are 25, 25, 25, 25. Divide by 4 → 25. CART uses /n, not sample variance.",
   },
   {
     id: "safe-column",

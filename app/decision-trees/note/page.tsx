@@ -5,6 +5,6 @@ export const metadata: Metadata = {
   title: "Ward note",
 };
 
-export default function NotePage() {
+export default function DecisionTreesNotePage() {
   return <WardNoteForm />;
 }

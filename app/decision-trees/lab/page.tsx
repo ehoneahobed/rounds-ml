@@ -5,6 +5,6 @@ export const metadata: Metadata = {
   title: "Tree lab",
 };
 
-export default function LabPage() {
+export default function DecisionTreesLabPage() {
   return <TreeLab />;
 }

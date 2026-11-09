@@ -1,0 +1,198 @@
+import type { Question } from "@/lib/content/quiz";
+
+export const PASS_MARK = 13;
+
+export const questions: Question[] = [
+  {
+    id: "mse-basic",
+    prompt: "Truths [2, 4, 6] and predictions [1, 5, 5]. What is the mean squared error?",
+    choices: [
+      { id: "A", text: "1.0" },
+      { id: "B", text: "3.0" },
+      { id: "C", text: "0.0" },
+      { id: "D", text: "2.0" },
+    ],
+    correct: "A",
+    explanation: "Residuals are 1, −1, 1. Squares are 1, 1, 1. MSE is 3/3 = 1.",
+  },
+  {
+    id: "residual-sign",
+    prompt: "Truth y = 5 and prediction ŷ = 7. What is the residual y − ŷ, and what does the sign mean?",
+    choices: [
+      { id: "A", text: "2; the line predicted too low" },
+      { id: "B", text: "−2; the line predicted too high" },
+      { id: "C", text: "−2; the line predicted too low" },
+      { id: "D", text: "2; the line predicted too high" },
+    ],
+    correct: "B",
+    explanation: "5 − 7 = −2. A negative residual means the prediction was above the truth.",
+  },
+  {
+    id: "slope-read",
+    prompt: "A fitted line is loŝ = 1 + 2 × lactate. Lactate rises by 0.5. What happens to the prediction?",
+    choices: [
+      { id: "A", text: "It rises by 1 day" },
+      { id: "B", text: "It rises by 2 days" },
+      { id: "C", text: "It falls by 1 day" },
+      { id: "D", text: "It stays the same" },
+    ],
+    correct: "A",
+    explanation: "Slope 2 means one unit of lactate adds two predicted days. Half a unit adds one day.",
+  },
+  {
+    id: "closed-form",
+    prompt: "For one feature, the teaching table has slope 2 and intercept 1. A new lactate is 1.5. What is the prediction?",
+    choices: [
+      { id: "A", text: "2.5" },
+      { id: "B", text: "3.0" },
+      { id: "C", text: "4.0" },
+      { id: "D", text: "1.5" },
+    ],
+    correct: "C",
+    explanation: "1 + 2 × 1.5 = 4.",
+  },
+  {
+    id: "constant-x",
+    prompt: "Every training lactate equals 2.0, while length of stay varies. What does fit_univariate do?",
+    choices: [
+      { id: "A", text: "Return slope 0 and the mean length of stay" },
+      { id: "B", text: "Raise ValueError, because the denominator is 0" },
+      { id: "C", text: "Return slope 1" },
+      { id: "D", text: "Ignore lactate and fit on the row index" },
+    ],
+    correct: "B",
+    explanation: "Σ(x − x̄)² is 0 when x is constant. There is no unique slope.",
+  },
+  {
+    id: "design-matrix",
+    prompt: "design_matrix([[2.0], [3.0]]) prepends an intercept column. What is the result?",
+    choices: [
+      { id: "A", text: "[[1, 2], [1, 3]]" },
+      { id: "B", text: "[[2, 1], [3, 1]]" },
+      { id: "C", text: "[[2], [3]]" },
+      { id: "D", text: "[[1, 1], [2, 3]]" },
+    ],
+    correct: "A",
+    explanation: "Each row gains a leading 1, then the original features.",
+  },
+  {
+    id: "r2-perfect",
+    prompt: "Truths [2, 4, 6] and predictions [2, 4, 6]. What is R²?",
+    choices: [
+      { id: "A", text: "0" },
+      { id: "B", text: "0.5" },
+      { id: "C", text: "1" },
+      { id: "D", text: "Undefined" },
+    ],
+    correct: "C",
+    explanation: "Every residual is 0, so SS_res is 0 and R² is 1.",
+  },
+  {
+    id: "r2-mean",
+    prompt: "Truths [2, 4, 6] and predictions [4, 4, 4]. What is R²?",
+    choices: [
+      { id: "A", text: "1" },
+      { id: "B", text: "0" },
+      { id: "C", text: "0.5" },
+      { id: "D", text: "−1" },
+    ],
+    correct: "B",
+    explanation: "Predicting the mean makes SS_res equal SS_tot, so R² is 0.",
+  },
+  {
+    id: "safe-column",
+    prompt: "You predict length of stay at hour 6. Which column is safe as a feature?",
+    choices: [
+      { id: "A", text: "Discharge disposition" },
+      { id: "B", text: "A lactate drawn at hour 30" },
+      { id: "C", text: "Respiratory rate measured at hour 6" },
+      { id: "D", text: "Whether the patient died in hospital" },
+    ],
+    correct: "C",
+    explanation: "Respiratory rate exists at decision time. The others are later consequences.",
+  },
+  {
+    id: "los-name",
+    prompt: "A column named los_proxy has available_hour 6 and role feature. What does the leakage screen say?",
+    choices: [
+      { id: "A", text: "Clean, because the hour is legal" },
+      { id: "B", text: "name_leak, because the name contains los_" },
+      { id: "C", text: "temporal_leak" },
+      { id: "D", text: "identifier" },
+    ],
+    correct: "B",
+    explanation: "The substring los_ is a name leak even when the recorded hour is 6.",
+  },
+  {
+    id: "random-split",
+    prompt: "A random split of rows puts two hours from the same patient on both sides. What goes wrong?",
+    choices: [
+      { id: "A", text: "MSE becomes undefined" },
+      { id: "B", text: "The test set is no longer later, unseen patients, so the score flatters you" },
+      { id: "C", text: "Linear regression cannot use numeric features" },
+      { id: "D", text: "R² is forced to 1" },
+    ],
+    correct: "B",
+    explanation: "Shared patients and mixed time leak information across the cut.",
+  },
+  {
+    id: "standardize",
+    prompt: "You standardize features. Where do the means and standard deviations come from?",
+    choices: [
+      { id: "A", text: "The training patients only" },
+      { id: "B", text: "Training and test patients pooled" },
+      { id: "C", text: "The test patients only" },
+      { id: "D", text: "A fixed table of clinical normals" },
+    ],
+    correct: "A",
+    explanation: "Statistics computed with test rows let the future change the scale.",
+  },
+  {
+    id: "ridge",
+    prompt: "In this module's ridge solve, what happens to the intercept when α > 0?",
+    choices: [
+      { id: "A", text: "It is shrunk toward 0 like every other weight" },
+      { id: "B", text: "It is left unpenalized" },
+      { id: "C", text: "It is forced to 0" },
+      { id: "D", text: "It is replaced by the mean of y" },
+    ],
+    correct: "B",
+    explanation: "I* has a 0 in the intercept position, so α does not add to that diagonal entry.",
+  },
+  {
+    id: "gd-step",
+    prompt: "Gradient descent updates weights with w ← w − η ∇. What is η?",
+    choices: [
+      { id: "A", text: "The residual for one patient" },
+      { id: "B", text: "The learning rate, the step size" },
+      { id: "C", text: "The number of features" },
+      { id: "D", text: "R² on the training set" },
+    ],
+    correct: "B",
+    explanation: "η is the learning rate. It scales how far each step moves.",
+  },
+  {
+    id: "mae-unit",
+    prompt: "Test MAE is 0.7 for a length-of-stay model. What is a fair reading?",
+    choices: [
+      { id: "A", text: "About 70% of predictions are exact" },
+      { id: "B", text: "A typical absolute error is about 0.7 days on the later arrivals" },
+      { id: "C", text: "R² is 0.7" },
+      { id: "D", text: "The slope on lactate is 0.7" },
+    ],
+    correct: "B",
+    explanation: "MAE is the average absolute residual, already in the label's units.",
+  },
+  {
+    id: "assay",
+    prompt: "Hospital B's lactate assay reads 15% lower than A's. You ship a slope learned on A. What should you expect on B?",
+    choices: [
+      { id: "A", text: "Predicted days stay the same for the same blood" },
+      { id: "B", text: "The same blood can map to a different predicted length of stay" },
+      { id: "C", text: "Only classification models are affected" },
+      { id: "D", text: "MSE rescales the column automatically" },
+    ],
+    correct: "B",
+    explanation: "A lower reported lactate enters the same slope and produces a different prediction.",
+  },
+];

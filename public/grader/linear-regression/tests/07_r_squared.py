@@ -1,0 +1,5 @@
+check("perfect", abs(r_squared([2.0, 4.0, 6.0], [2.0, 4.0, 6.0]) - 1.0) < 1e-12)
+check("mean", abs(r_squared([2.0, 4.0, 6.0], [4.0, 4.0, 4.0]) - 0.0) < 1e-12)
+check("constant_perfect", r_squared([2.0, 2.0], [2.0, 2.0]) == 1.0)
+check("constant_bad", r_squared([2.0, 2.0], [1.0, 3.0]) == 0.0)
+check("empty", r_squared([], []) == 0.0)

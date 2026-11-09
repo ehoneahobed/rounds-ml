@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start -p 3457 -H 127.0.0.1",
     "lint": "eslint",
-    "test:curriculum": "python3 -m unittest curriculum.test_solution"
+    "test:curriculum": "python3 -m unittest curriculum.test_solution curriculum.linear_regression.test_solution"
   },
   "dependencies": {
     "@codemirror/commands": "^6.11.1",

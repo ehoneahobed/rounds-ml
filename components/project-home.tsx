@@ -3,27 +3,31 @@
 import Link from "next/link";
 import { LabCard } from "@/components/lab/lab-card";
 import { Badge } from "@/components/ui/badge";
-import { concepts } from "@/lib/content/concepts";
-import { PASS_MARK, questions } from "@/lib/content/quiz";
-import { LEVEL_LABELS, TOTAL_POINTS, tasks } from "@/lib/content/tasks";
+import { contentFor } from "@/lib/module-content";
+import { useModule } from "@/lib/module-context";
+import { DECISION_TREES, moduleHref } from "@/lib/modules";
 import { useStudyProgress, wardNoteComplete } from "@/lib/progress";
 
 /** The project brief: concepts, the check, and the task list, with local progress. */
 export function ProjectHome() {
+  const module = useModule();
+  const content = contentFor(module);
   const progress = useStudyProgress();
 
-  const conceptMinutes = concepts.reduce((sum, concept) => sum + concept.minutes, 0);
-  const taskMinutes = tasks.reduce((sum, task) => sum + task.minutes, 0);
+  const conceptMinutes = content.concepts.reduce((sum, concept) => sum + concept.minutes, 0);
+  const taskMinutes = content.tasks.reduce((sum, task) => sum + task.minutes, 0);
   const hours = Math.round((conceptMinutes + 60 + taskMinutes) / 60);
   const read = new Set(progress.conceptsRead);
   const passed = new Set(progress.tasksPassed);
-  const points = tasks.filter((task) => passed.has(task.slug)).reduce((sum, task) => sum + task.points, 0);
+  const points = content.tasks.filter((task) => passed.has(task.slug)).reduce((sum, task) => sum + task.points, 0);
   const noteDone = wardNoteComplete(progress.wardNote);
 
   return (
     <div className="grid gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.15fr)]">
       <section>
-        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-green">0x01 · auto-checked · about {hours} hours · {TOTAL_POINTS} points</p>
+        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-green">
+          {DECISION_TREES.code} · auto-checked · about {hours} hours · {content.totalPoints} points
+        </p>
         <h1 className="mt-3 font-serif text-4xl leading-tight tracking-tight text-ink sm:text-5xl">Decision trees</h1>
         <p className="mt-4 text-lg leading-relaxed text-ink">
           Build a classification tree from scratch and fit it as an early-warning score at hour 6 of an admission. The label is deterioration within 48 hours. The features are the vitals and labs that have resulted by then.
@@ -33,25 +37,27 @@ export function ProjectHome() {
           <div>
             <dt className="text-muted">Concepts read</dt>
             <dd className="mt-1 font-mono text-lg">
-              {concepts.filter((concept) => read.has(concept.slug)).length}/{concepts.length}
+              {content.concepts.filter((concept) => read.has(concept.slug)).length}/{content.concepts.length}
             </dd>
           </div>
           <div>
             <dt className="text-muted">Check</dt>
-            <dd className="mt-1 font-mono text-lg">{progress.quizBest === null ? "—" : `${progress.quizBest}/${questions.length}`}</dd>
+            <dd className="mt-1 font-mono text-lg">
+              {progress.quizBest === null ? "—" : `${progress.quizBest}/${content.questions.length}`}
+            </dd>
           </div>
           <div>
             <dt className="text-muted">Task points</dt>
             <dd className="mt-1 font-mono text-lg">
-              {points}/{TOTAL_POINTS}
+              {points}/{content.totalPoints}
             </dd>
           </div>
         </dl>
         <h2 className="mt-8 font-serif text-2xl">Work through it in this order</h2>
         <ol className="mt-3 list-decimal space-y-2 pl-5 text-[1.02rem] leading-relaxed">
-          <li>Read the {concepts.length} concept pages in order. When a page asks you to compute, finish the arithmetic before you continue.</li>
+          <li>Read the {content.concepts.length} concept pages in order—what a tree is, how splits are chosen, regression trees, stopping/sklearn, then the ward. When a page asks you to compute, finish the arithmetic before you continue.</li>
           <li>
-            Knowledge check: {questions.length} questions, {PASS_MARK} to pass.
+            Knowledge check: {content.questions.length} questions, {content.passMark} to pass.
           </li>
           <li>Eleven tasks. Level 0 is impurity. Level 1 is the tree. Level 2 is leakage, time, and the threshold. Level 3 fits the hour-6 model.</li>
           <li>A ward note: the columns you refused, the threshold you chose, and one way the tree fails. It stays in this browser.</li>
@@ -63,23 +69,30 @@ export function ProjectHome() {
           <li>Later tasks prepend the code you saved on earlier tasks. The file you are editing wins if both define the same name.</li>
           <li>Follow the contracts on ties, empty nodes, and the hour-6 cutoff, so two correct solutions grow the same tree.</li>
           <li>Train and test on the synthetic admissions in this project.</li>
-          <li>Finish a task before you open <span className="font-mono text-sm">curriculum/reference_solution.py</span>.</li>
+          <li>
+            Finish a task before you open <span className="font-mono text-sm">curriculum/reference_solution.py</span>.
+          </li>
         </ul>
         <h2 className="mt-8 font-serif text-2xl">Module checklist</h2>
         <ul className="mt-3 space-y-2 text-sm">
-          <Check done={read.size === concepts.length} label="All concept pages marked read" />
-          <Check done={progress.quizPassed} label={`Knowledge check at ${PASS_MARK} or better`} />
-          <Check done={passed.size === tasks.length} label="Every task cleared" />
+          <Check done={read.size === content.concepts.length} label="All concept pages marked read" />
+          <Check done={progress.quizPassed} label={`Knowledge check at ${content.passMark} or better`} />
+          <Check done={passed.size === content.tasks.length} label="Every task cleared" />
           <Check done={noteDone} label="Ward note written, including the hand calculation" />
         </ul>
+        <p className="mt-6 text-sm leading-relaxed text-muted">
+          <Link href="/" className="font-semibold text-green hover:underline">
+            All modules
+          </Link>
+        </p>
       </section>
       <section className="space-y-8">
         <div>
           <h2 className="font-serif text-2xl">Concepts</h2>
           <ol className="mt-3 divide-y divide-line border-y border-line">
-            {concepts.map((concept) => (
+            {content.concepts.map((concept) => (
               <li key={concept.slug}>
-                <Link href={`/concepts/${concept.slug}`} className="flex items-baseline gap-3 py-3 hover:bg-secondary/50">
+                <Link href={moduleHref(module, `/concepts/${concept.slug}`)} className="flex items-baseline gap-3 py-3 hover:bg-secondary/50">
                   <span className="w-8 font-mono text-sm text-muted">{concept.number}</span>
                   <span className="flex-1">
                     <span className="font-semibold">{concept.title}</span>
@@ -95,25 +108,26 @@ export function ProjectHome() {
         <div>
           <div className="flex items-baseline justify-between gap-3">
             <h2 className="font-serif text-2xl">Knowledge check</h2>
-            <Link href="/quiz" className="text-sm font-semibold text-green">
+            <Link href={moduleHref(module, "/quiz")} className="text-sm font-semibold text-green">
               {progress.quizPassed ? "Review the check" : "Open the check"}
             </Link>
           </div>
           <p className="mt-2 text-sm text-muted">
-            {questions.length} questions. Pass mark {PASS_MARK}. Best score {progress.quizBest === null ? "not taken" : `${progress.quizBest}/${questions.length}`}.
+            {content.questions.length} questions. Pass mark {content.passMark}. Best score{" "}
+            {progress.quizBest === null ? "not taken" : `${progress.quizBest}/${content.questions.length}`}.
           </p>
         </div>
         <div>
           <h2 className="font-serif text-2xl">Tasks</h2>
           <ol className="mt-3 divide-y divide-line border-y border-line">
-            {tasks.map((task) => (
+            {content.tasks.map((task) => (
               <li key={task.slug}>
-                <Link href={`/tasks/${task.slug}`} className="flex items-start gap-3 py-3 hover:bg-secondary/50">
+                <Link href={moduleHref(module, `/tasks/${task.slug}`)} className="flex items-start gap-3 py-3 hover:bg-secondary/50">
                   <span className="w-8 pt-0.5 font-mono text-sm text-muted">{task.number}</span>
                   <span className="min-w-0 flex-1">
                     <span className="font-semibold">{task.title}</span>
                     <span className="mt-0.5 block text-sm text-muted">{task.summary}</span>
-                    <span className="mt-1 block text-xs uppercase tracking-[0.12em] text-muted">{LEVEL_LABELS[task.level]}</span>
+                    <span className="mt-1 block text-xs uppercase tracking-[0.12em] text-muted">{content.levelLabels[task.level]}</span>
                   </span>
                   <span className="text-right">
                     <span className="block font-mono text-sm">{task.points} pts</span>

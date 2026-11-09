@@ -301,45 +301,152 @@ y_prob = tree.predict_proba(X_test)[:, 1]`,
     slug: "using-it",
     number: "05",
     title: "Using the tree on the ward",
-    minutes: 25,
-    summary: "Walk a row, refuse illegal columns, split by time, read sensitivity and PPV.",
+    minutes: 40,
+    summary: "Turn the tree into rules, refuse leaked columns, split by time, and read sensitivity and PPV.",
     blocks: [
       {
         type: "p",
-        text: "Prediction is the walk you already did: start at the root, take left or right at each threshold, stop at a leaf. Export the paths as rules a clinician can read aloud.",
+        text: "You already know how to grow a tree and how to walk one patient down it. This page is about using that tree as if you were shipping it: say the rules out loud, refuse columns that cheat, test on later patients, and turn a leaf probability into a yes/no alarm you can defend.",
+      },
+      {
+        type: "h2",
+        text: "Say the tree as rules",
+      },
+      {
+        type: "p",
+        text: "Every path from the root to a leaf is one if-then rule. The eight-patient teaching tree exports as three lines:",
       },
       { type: "paths" },
       {
-        type: "h2",
-        text: "Hour 6 only",
+        type: "p",
+        text: "Read the first line as: “If lactate is at or below 1.80, predict 0. All four training patients on that path had label 0, so the probability is 1.00 on n=4.” The other two lines are the high-lactate branch, split by age. When you hand a tree to a clinician, these sentences are the model—not a black box of weights.",
       },
       {
         type: "p",
-        text: "This project scores deterioration risk at hour 6 of an admission. Features may only be facts known by then. Death, discharge disposition, length of stay, and a lactate drawn at hour 30 are labels or future assays—not features. Identifiers (patient id, encounter id) are not features. If a column’s available hour is unknown, treat it as unsafe until proven.",
-      },
-      {
-        type: "p",
-        text: "A random row split can put two hours from the same patient on both train and test. The test set then is not a future, unseen patient, and the score flatters you. Hold out whole patients, with later arrivals in the test set.",
+        text: "Always say the denominator with the probability. “1.00 on n=2” means both of two people. That can flip to 0.50 the next week. “1.00 on n=40” is a stronger frequency.",
       },
       {
         type: "h2",
-        text: "Threshold and metrics",
+        text: "Only facts known at hour 6",
       },
       {
         type: "p",
-        text: "The leaf gives a probability. You still choose a threshold: call the case positive when probability ≥ t. Sensitivity is TP / (TP + FN)—of the people who truly deteriorated, how many you flagged. PPV is TP / (TP + FP)—of the alarms, how many were real. When the event is rare, PPV falls even if sensitivity looks fine.",
+        text: "This project’s job is: at hour 6 of an admission, estimate whether the patient will deteriorate later. At that moment a nurse has age, sex, vitals, labs that have already resulted, and diagnoses already on the chart. She does not yet know how the stay ends, whether the patient dies, or what a lactate drawn on day two will say.",
+      },
+      {
+        type: "p",
+        text: "If you train on columns that only exist after the decision, the tree looks brilliant and fails on the next admission. That cheat is called leakage. Concrete examples:",
+      },
+      {
+        type: "ul",
+        items: [
+          "Safe at hour 6: respiratory rate measured at hour 6, lactate resulted by hour 6, age.",
+          "Illegal — the label itself: “deteriorated within 48 hours.” You do not use the answer as an input.",
+          "Illegal — future facts: death in hospital, discharge disposition, a lactate drawn at hour 30, length of stay.",
+          "Illegal — identifiers: patient id, encounter id, hospital id. Those memorize a person or a ward, not a pattern.",
+          "Illegal — name leaks: a column whose name contains something like `los_`, `death`, or `discharge` even if someone stamped available_hour 6.",
+          "Unsafe until proven: a feature whose available hour is unknown. Treat it as illegal until you know when it exists.",
+        ],
+      },
+      {
+        type: "p",
+        text: "In the tasks you will write a small screen, `leakage_report`, that walks each column and returns the first matching reason. The order matters: label, then identifier, then too-late hour, then bad name, then unknown time.",
+      },
+      {
+        type: "h2",
+        text: "Test on later patients, not shuffled rows",
+      },
+      {
+        type: "p",
+        text: "After you refuse bad columns, you still need an honest score. A common mistake is to shuffle every row and put 25% in a “test” set. That can put hour 4 of patient A in training and hour 10 of the same patient A in testing. The tree has already seen that person. The test score flatters you.",
+      },
+      {
+        type: "p",
+        text: "The fix used in this module: keep every row of a patient together, sort patients by when they first appear, and hold out the latest arrivals as the test set. Training learns from earlier patients. Testing asks whether the tree still works on people who arrived later. That is closer to how a model would be used on the ward.",
+      },
+      {
+        type: "callout",
+        tone: "note",
+        title: "One sentence",
+        text: "Train on the past. Score on the future. Never leak the same patient across both sides.",
+      },
+      {
+        type: "h2",
+        text: "From a leaf probability to a yes/no alarm",
+      },
+      {
+        type: "p",
+        text: "A classification leaf does not only say 0 or 1. It also stores a probability: the fraction of training patients in that leaf who had label 1. For a new patient, `predict_proba` returns that fraction. You still have to choose a cutoff: call the case “positive” (raise an alarm) when the probability is at least some threshold \\(t\\). Example: if \\(t = 0.5\\), probability 0.6 is an alarm and 0.4 is not.",
+      },
+      {
+        type: "p",
+        text: "Lowering \\(t\\) flags more people (you catch more true events, but you also cry wolf more often). Raising \\(t\\) flags fewer people (quieter alarms, but you miss more true events). The next section names those trade-offs.",
+      },
+      {
+        type: "h2",
+        text: "The four boxes: TP, FP, TN, FN",
+      },
+      {
+        type: "p",
+        text: "Once you pick a threshold, every test patient falls into one of four boxes:",
+      },
+      {
+        type: "ul",
+        items: [
+          "True positive (TP): deteriorated, and you flagged them.",
+          "False positive (FP): did not deteriorate, but you flagged them (false alarm).",
+          "True negative (TN): did not deteriorate, and you left them alone.",
+          "False negative (FN): deteriorated, and you missed them.",
+        ],
+      },
+      {
+        type: "p",
+        text: "Imagine 200 later patients. Fifty truly deteriorated. Your tree with some threshold gives: TP 40, FP 30, TN 120, FN 10. Check: 40+10 = 50 deteriorations, 30+120 = 150 non-deteriorations, 200 total.",
       },
       { type: "bench", which: "confusion" },
       {
-        type: "reveal",
-        title: "Pause and compute",
-        prompt: "TP 40, FP 30, TN 120, FN 10. Sensitivity? PPV?",
-        answer: "Sensitivity \\(40/50 = 0.8\\). PPV \\(40/70 \\approx 0.57\\).",
+        type: "h2",
+        text: "Sensitivity and PPV",
       },
       {
         type: "p",
-        text: "A leaf with n=2 and p=1.00 is a frequency, not a law—say the denominator. A hospital-id feature is a memorized ward. An assay that reads differently at site B moves the same blood across your thresholds. Ship the tree with the columns you refused, the threshold you chose, and one honest failure mode.",
+        text: "Sensitivity answers: of the people who truly deteriorated, what fraction did we catch? That is TP / (TP + FN). In the example: 40 / (40+10) = 40/50 = 0.80. Eight in ten events were flagged. The two you missed are the false negatives.",
+      },
+      {
+        type: "p",
+        text: "Positive predictive value (PPV) answers a different question: of the alarms we raised, what fraction were real? That is TP / (TP + FP). In the example: 40 / (40+30) = 40/70 ≈ 0.57. Only about 57% of alarms were true events—even though sensitivity and specificity both look high.",
+      },
+      {
+        type: "reveal",
+        title: "Pause and compute",
+        prompt: "Same counts: TP 40, FP 30, TN 120, FN 10. What is specificity? (Of the people who did not deteriorate, what fraction did you leave alone?)",
+        answer: "Specificity = TN / (TN + FP) = 120 / (120+30) = 120/150 = 0.80.",
+      },
+      {
+        type: "p",
+        text: "When the event is rare, PPV collapses even if sensitivity stays at 0.80. Suppose 2% of 10,000 patients deteriorate (200 events). Sensitivity 0.80 catches 160 of them. Specificity 0.80 means 20% of the 9,800 non-events are false alarms → 1,960 false positives. PPV = 160 / (160+1960) ≈ 0.075. Most alarms are wrong. That is not the tree “breaking”—it is arithmetic when positives are scarce.",
+      },
+      {
+        type: "h2",
+        text: "Choosing the threshold on purpose",
+      },
+      {
+        type: "p",
+        text: "This module’s early-warning project picks a threshold on the training patients so that sensitivity is at least 0.80: try candidate cutoffs, keep the highest threshold that still meets that floor. Highest, not lowest—so among thresholds that catch enough events, you pick the strictest one (fewer false alarms for the same sensitivity floor).",
+      },
+      {
+        type: "p",
+        text: "Worked sketch: labels [1, 1, 0, 0] and probabilities [0.9, 0.6, 0.6, 0.2]. You want sensitivity at least 1.0 (catch both positives). Threshold 0.9 catches only the first positive (sensitivity 0.5). Threshold 0.6 catches both positives (and one false alarm). Threshold 0.2 also catches both, but it is lower. The rule returns 0.6.",
+      },
+      {
+        type: "h2",
+        text: "What you hand over",
+      },
+      {
+        type: "p",
+        text: "A finished review of this tree is not only a score. Write down: which columns you refused and why (hour 6), which threshold you froze and what sensitivity you were buying, and one honest failure mode. Examples of failure modes: a leaf with n=2 that looks certain; a hospital id that memorized a ward; a lactate assay at site B that reads 15% lower, so the same blood crosses your cut differently. That short note is the ward note at the end of the module.",
       },
     ],
   },
 ];
+
